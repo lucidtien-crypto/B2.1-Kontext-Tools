@@ -18,6 +18,7 @@
         }
 
         body {
+            /* Áp dụng font Nunito cho toàn bộ ứng dụng */
             font-family: 'Nunito', Roboto, Helvetica, Arial, sans-serif;
             background: radial-gradient(circle at top right, #1e1b4b, #0a0f1d);
             color: var(--text);
@@ -25,18 +26,6 @@
             padding: 20px;
             display: flex;
             justify-content: center;
-        }
-
-        /* Ngăn người dùng vô tình bôi đen văn bản khi chạm trên điện thoại */
-        * {
-            -webkit-user-select: none; /* Chrome, Safari, Opera */
-            user-select: none; /* Chuẩn chung */
-        }
-
-        /* Ngoại trừ ô nhập liệu thì vẫn cho phép gõ và chọn chữ */
-        textarea, input {
-            -webkit-user-select: text;
-            user-select: text;
         }
 
         .container { width: 100%; max-width: 420px; }
@@ -83,14 +72,17 @@
             text-align: center; 
             outline: none; 
             box-sizing: border-box;
+            
             font-family: 'Nunito', monospace; 
             font-size: 22px; 
             font-weight: 600; 
             letter-spacing: 1px; 
             font-variant-ligatures: none; 
-            resize: none;
-            line-height: 1.5;
-            overflow: hidden;
+            
+            /* 3 DÒNG MỚI DÀNH RIÊNG CHO TEXTAREA */
+            resize: none; /* Cấm kéo giãn khung lung tung */
+            line-height: 1.5; /* Khoảng cách dòng thoáng mắt */
+            overflow: hidden; /* Giấu thanh cuộn dọc cho đẹp */
         }
 
         .feedback-box { min-height: 70px; margin: 15px 0; text-align: center; font-size: 14px; }
@@ -105,23 +97,6 @@
         .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; }
         .dot.active { background: var(--success); box-shadow: 0 0 10px var(--success); }
 
-        /* Nút Loa mới thiết kế giống App */
-        .speaker-btn {
-            background: rgba(167, 139, 250, 0.2);
-            border: 1px solid var(--primary);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            font-size: 18px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: white;
-            margin-left: 10px;
-        }
-        .speaker-btn:active { background: var(--primary); }
-
         .hidden { display: none !important; }
     </style>
 </head>
@@ -131,7 +106,7 @@
     <div id="menu-screen">
         <div class="glass-card">
             <h2>Vokabelübung Kontext B2.1 <span id="lek-stats" style="font-size: 14px; font-weight: normal; color: var(--success); margin-left: 10px; background: rgba(52, 211, 153, 0.1); padding: 4px 10px; border-radius: 12px;">0/0</span></h2>
-            
+            <button onclick="speakGerman('Hallo! Das ist ein Test.')" style="margin-bottom: 10px; padding: 10px; background: #3b82f6; color: white; border-radius: 8px; border: none;">🔊 Nhấn vào đây để TEST LOA</button>
             <div id="lek-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px;"></div>
             
             <div style="display: flex; gap: 8px; margin-bottom: 20px;">
@@ -139,8 +114,10 @@
                 <button class="btn-main" id="btn-adv" onclick="startAdvancedMode()" style="background: linear-gradient(135deg, #f59e0b, #ef4444); padding: 8px; font-size: 14px; flex: 1; border-radius: 10px;">🔥 Nâng cao B2</button>
             </div>
 
+            <!-- Nút Bắt đầu học bình thường -->
             <button class="btn-main" onclick="startSession('normal')">Bắt đầu học (5 từ)/Lerne (5 Wörter)</button>
             
+            <!-- CHIA NÚT ÔN TẬP LÀM 2 -->
             <div style="display: flex; gap: 8px; margin-top: 10px;">
                 <button class="btn-main" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf); font-size: 14px; padding: 12px; flex: 1;" onclick="startSession('mixed')">🔥 Ôn hỗn hợp (Tính Streak)-Gemischte Lernen</button>
                 <button class="btn-main" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 14px; padding: 12px; flex: 1;" onclick="startSession('quick')">⚡ Ôn nhanh (Không phạt)- Kurzrezension (Kein Steak ging verloren)!</button>
@@ -164,7 +141,7 @@
 
     <div id="quiz-screen" class="hidden">
         <div style="font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 15px; font-style: italic;">
-            💡 <b></b> [sich Akk/Dat] + [Präpositionen] + jemand../etwas (Akk/Dat) + <b>[Verben am Ende]</b>
+            💡 <b>Công thức chuẩn:</b> [sich Akk/Dat] + [Giới từ] + jemanden / jemandem / etwas (Akk/Dat) + <b>[Động từ ở cuối]</b>
         </div>
         <div class="glass-card">
             <div class="streak-dots" id="dots"></div>
@@ -186,9 +163,9 @@
 </div>
 
 <script>
-// 1. Dán chuỗi mã hóa của bạn vào giữa cặp dấu nháy đơn dưới đây
-    const encodedData =     [
-{
+    // BẠN DÁN DATA CỦA BẠN VÀO ĐÂY NHÉ
+    const data = [
+       {
         "word": "verantwortlich",
         "ans": "für jemanden/etwas verantwortlich sein",
         "type": "Adjektiv",
@@ -4920,20 +4897,16 @@
 	
 	
 	
-		
 	
 	
 	
 	
-	
-	
-	
-	
-];
+    ];
 
-    let isMixedMode = false;
-    let isNoStreakMode = false;
-    let isWaitingForNext = false;
+    let isMixedMode = false; // Cờ theo dõi chế độ thi tổng hợp
+    let isNoStreakMode = false; // CỜ MỚI: Theo dõi chế độ Ôn nhanh (Không xóa streak)
+    let isWaitingForNext = false; // CỜ MỚI: Đợi người dùng bấm Enter để qua câu nếu làm sai ở chế độ Ôn nhanh
+
     let currentLek = localStorage.getItem('b2_last_lek') || 1; 
     if (currentLek !== 'fehler') currentLek = parseInt(currentLek) || 1;
     
@@ -4946,23 +4919,44 @@
     let isAdvancedMode = false;
     let isTransitioning = false; 
 
-    // Hàm mở khóa Audio trên điện thoại
+    // --- KÍCH HOẠT ÂM THANH TRÊN ĐIỆN THOẠI MỚI ---
+    // Khởi tạo một đối tượng audio trống để mở khóa Web Audio API trên thiết bị di động
     function unlockAudio() {
         if ('speechSynthesis' in window) {
             const whisper = new SpeechSynthesisUtterance('');
-            whisper.volume = 0;
+            whisper.volume = 0; // Đọc thầm
             window.speechSynthesis.speak(whisper);
         }
+        // Xóa sự kiện sau khi đã kích hoạt
         document.body.removeEventListener('touchstart', unlockAudio);
         document.body.removeEventListener('click', unlockAudio);
     }
+    
     document.body.addEventListener('touchstart', unlockAudio);
     document.body.addEventListener('click', unlockAudio);
 
+    const loadVoices = () => {
+        return new Promise((resolve) => {
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length !== 0) resolve(voices);
+            else {
+                window.speechSynthesis.onvoiceschanged = () => {
+                    voices = window.speechSynthesis.getVoices();
+                    resolve(voices);
+                };
+            }
+        });
+    };
+    loadVoices().then(voices => console.log("Voices loaded successfully!"));
+
+    // --- HÀM PHÁT ÂM THANH ĐÃ SỬA LỖI ĐỌC TÊN CÁCH VÀ GIỌNG ---
     function speakGerman(text) {
         if (!('speechSynthesis' in window)) return;
+
+        // Hủy các yêu cầu đang chờ để tránh bị treo
         window.speechSynthesis.cancel();
 
+        // Xử lý chuỗi văn bản: dịch viết tắt và chuẩn hóa
         let cleanText = text.split(',')[0].trim();
         cleanText = cleanText
             .replace(/\+\s*(jmdm\.|jmdn\.|jmd\.|etw\.|etwas)\s*\((Da|Akk|D|A|Dat)\)/gi, (match, obj, kasus) => {
@@ -4970,6 +4964,7 @@
                 let o = obj.includes('jmdm') ? "jemandem" : obj.includes('jmdn') ? "jemanden" : obj.includes('jmd') ? "jemand" : "etwas";
                 return `plus ${k} ${o}`;
             })
+            // Ép buộc đọc đúng cách thay vì đánh vần
             .replace(/\bAkk\b/g, "Akkusativ")
             .replace(/\bA\b/g, "Akkusativ")
             .replace(/\bDat\b/g, "Dativ")
@@ -4977,9 +4972,11 @@
             .replace(/\bD\b/g, "Dativ")
             .replace(/\bNom\b/g, "Nominativ")
             .replace(/\bGen\b/g, "Genitiv")
+            // Chuẩn hóa đại từ
             .replace(/\bjmdm\b/gi, "jemandem")
             .replace(/\bjmdn\b/gi, "jemanden")
             .replace(/\betw\b/gi, "etwas")
+            // Chuẩn hóa mạo từ
             .replace(/\b(r|r\.)\/(e|e\.)\s+(\w+)/g, "der $3, die $3")
             .replace(/\br\.\s/g, "der ")
             .replace(/\be\.\s/g, "die ")
@@ -4989,12 +4986,16 @@
         utterance.lang = 'de-DE';
         utterance.rate = 0.85; 
 
+        // Lựa chọn giọng đọc tối ưu cho cả máy tính và điện thoại
         const voices = window.speechSynthesis.getVoices();
         const preferredVoice = voices.find(v => v.name.includes("Stefan")) || 
                                voices.find(v => v.name.includes("Google Deutsch")) ||
                                voices.find(v => v.lang.startsWith("de"));
         
-        if (preferredVoice) utterance.voice = preferredVoice;
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+        }
+
         window.speechSynthesis.speak(utterance);
     }
 
@@ -5004,7 +5005,8 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        const dateString = new Date().toISOString().split('T')[0];
+        const date = new Date();
+        const dateString = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
         a.download = `Streak_B2_Backup_${dateString}.txt`;
         document.body.appendChild(a);
         a.click();
@@ -5021,13 +5023,15 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
+                const content = e.target.result;
                 try {
-                    mastery = JSON.parse(e.target.result);
+                    const parsed = JSON.parse(content);
+                    mastery = parsed;
                     save();
-                    alert("✨ Phục hồi Streak thành công!");
+                    alert("✨ Phục hồi Streak thành công! Mọi thứ đã trở lại.");
                     location.reload();
                 } catch(err) {
-                    alert("File không hợp lệ!");
+                    alert("File không hợp lệ hoặc bị lỗi! Vui lòng chọn đúng file Backup.");
                 }
             };
             reader.readAsText(file);
@@ -5046,12 +5050,14 @@
     function startAdvancedMode() {
         let notMastered = data.filter(v => mastery[v.word].a && mastery[v.word].s < 3);
         if (notMastered.length > 0) {
-            return alert(`🛑 CHƯA ĐỦ ĐIỀU KIỆN LÀM B2!\nBạn còn ${notMastered.length} thẻ chưa hoàn thành!`);
+            return alert(`🛑 CHƯA ĐỦ ĐIỀU KIỆN LÀM B2!\n\nBạn phải học thuộc (đạt 3/3 🔥) TOÀN BỘ từ vựng và câu sai ở các bài học trước.\n\nBạn còn ${notMastered.length} thẻ chưa hoàn thành!/          Du bist noch nicht für B2 berechtigt!
+Du musst alle Vokabeln und fehlerhaften Sätze aus den vorherigen Lektionen auswendig lernen, um 3/3 🔥 zu erreichen.
+Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
         }
 
         isAdvancedMode = true;
         let availablePool = data.filter(v => mastery[v.word].a); 
-        if (availablePool.length === 0) return alert("Vui lòng chọn ít nhất 1 câu!");
+        if (availablePool.length === 0) return alert("Vui lòng chọn ít nhất 1 câu trong danh sách để ôn!");
         
         session = availablePool.sort(() => 0.5 - Math.random()).slice(0, 5);
         idx = 0; currentStep = 1; penaltyMode = false; penaltyCount = 0; isWaitingForNext = false;
@@ -5104,11 +5110,14 @@
         }
 
         data.forEach(v => { 
-            if (mastery[v.word] === undefined) mastery[v.word] = { s: 0, w: 0, a: true }; 
+            if (mastery[v.word] === undefined) {
+                mastery[v.word] = { s: 0, w: 0, a: true }; 
+            }
         });
         
         localStorage.setItem('b2_pro_v1', JSON.stringify(mastery));
-        renderList(); renderHeat();
+        renderList();
+        renderHeat();
     }
 
     function renderList() {
@@ -5119,9 +5128,11 @@
         if(statsEl) {
             statsEl.innerText = `${masteredCount}/${currentData.length} 🔥`;
             if(masteredCount === currentData.length && currentData.length > 0) {
-                statsEl.style.background = "var(--success)"; statsEl.style.color = "#000";
+                statsEl.style.background = "var(--success)";
+                statsEl.style.color = "#000";
             } else {
-                statsEl.style.background = "rgba(52, 211, 153, 0.1)"; statsEl.style.color = "var(--success)";
+                statsEl.style.background = "rgba(52, 211, 153, 0.1)";
+                statsEl.style.color = "var(--success)";
             }
         }
 
@@ -5139,34 +5150,54 @@
         `).join('');
     }
 
+    // UPDATE: HÀM KHỞI TẠO HỖ TRỢ 3 CHẾ ĐỘ
     function startSession(mode = 'normal') {
-        isAdvancedMode = false; isMixedMode = (mode === 'mixed' || mode === 'quick'); isNoStreakMode = (mode === 'quick');
+        isAdvancedMode = false;
+        isMixedMode = (mode === 'mixed' || mode === 'quick');
+        isNoStreakMode = (mode === 'quick');
+
         let availablePool = [];
 
         if (isMixedMode) {
+            // Lấy từ đã đạt Streak 3
             availablePool = data.filter(v => mastery[v.word].a && mastery[v.word].s >= 3);
-            if (availablePool.length === 0) return alert("Bạn chưa có từ nào đạt đủ Streak 3/3 để ôn tập!");
+            if (availablePool.length === 0) {
+                return alert("Bạn chưa có từ nào đạt đủ Streak 3/3 để ôn tập!");
+            }
         } else {
-            availablePool = data.filter(v => (currentLek === 'fehler' ? (v.type && v.type.includes("Fehler")) : v.lek == currentLek) && mastery[v.word].a && mastery[v.word].s < 3);
-            if (availablePool.length === 0) return alert("Chúc mừng! Bạn đã học thuộc hết (đạt 3/3) các từ ở bài này!");
+            // Chế độ học thường (Streak < 3)
+            availablePool = data.filter(v => 
+                (currentLek === 'fehler' ? (v.type && v.type.includes("Fehler")) : v.lek == currentLek) && 
+                mastery[v.word].a && 
+                mastery[v.word].s < 3
+            );
+            if (availablePool.length === 0) {
+                return alert("Chúc mừng! Bạn đã học thuộc hết (đạt 3/3) các từ ở bài này!");
+            }
         }
 
+        // BỐC TỪ VÀ XÁO TRỘN ĐÚNG LOGIC
         if (isMixedMode) {
+            // Chế độ Ôn tập (Hỗn hợp / Nhanh): Xáo trộn TOÀN BỘ kho từ trước, rồi bốc ngẫu nhiên 15 từ
             session = availablePool.sort(() => Math.random() - 0.5).slice(0, 15);
         } else {
+            // Chế độ Học mới: Bốc đúng 5 từ đầu tiên chưa thuộc, rồi xáo trộn thứ tự hỏi
             session = availablePool.slice(0, 5).sort(() => Math.random() - 0.5);
         }
 
         idx = 0; currentStep = 1; penaltyMode = false; penaltyCount = 0; isWaitingForNext = false;
         document.getElementById('menu-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
-        renderHeat(); showWord();
+        renderHeat();
+        showWord();
     }
 
     function showWord() {
         const quizScreen = document.getElementById('quiz-screen');
+        
         if (idx >= session.length) {
-            quizScreen.innerHTML = `<div class="glass-card" style="text-align:center" id="finish-card">
+            quizScreen.innerHTML = `
+                <div class="glass-card" style="text-align:center" id="finish-card">
                     <h2 style="color:var(--success)">Fertig! 🥳</h2>
                     <p style="font-size: 14px; opacity: 0.8; margin-bottom:20px">Đã hoàn thành lượt ôn tập này.</p>
                     <button class="btn-main" onclick="location.reload()">Về Menu (Enter)</button>
@@ -5174,12 +5205,15 @@
             return;
         }
 
-        const v = session[idx]; const inputField = document.getElementById('ans-input');
+        const v = session[idx];
+        const inputField = document.getElementById('ans-input');
         if (currentStep !== 1 && currentStep !== 2) currentStep = 1;
 
         let fullType = (v.type || "Wort").replace(/\bAdj\.?\b/gi, "Adjektiv").replace(/\bAdv\.?\b/gi, "Adverb");
-        const stepText = isAdvancedMode ? (currentStep === 1 ? "B2 CỤM TỪ (Dịch)" : "B2 VÍ DỤ (Dịch nguyên câu)") : (currentStep === 1 ? "BƯỚC 1: TỪ GỐC" : "BƯỚC 2: CỤM TỪ");
+        const stepText = isAdvancedMode ? (currentStep === 1 ? "B2 CỤM TỪ (Dịch)" : "B2 VÍ DỤ (Dịch nguyên câu)") : (currentStep === 1 ? "BƯỚC 1: TỪ GỐC/SCHRITT 1: SCHLÜSSELWÖRTER" : "BƯỚC 2: CỤM TỪ/SCHRITT 2: PHRASEN");
         const currentVN = isAdvancedMode ? (currentStep === 1 ? v.vnans : v.vn_b2) : (currentStep === 1 ? v.vnword : v.vnans);
+
+        // Hiển thị thêm Tag ⚡ nếu đang ở chế độ Ôn nhanh
         let quickModeTag = isNoStreakMode ? `<span style="color: #34d399;">⚡ ÔN NHANH</span> | ` : "";
 
         document.getElementById('q-type').innerHTML = `${quickModeTag}Wort ${idx + 1}/${session.length} | <span style="color: #fde047;">${fullType}</span> | ${stepText}`;
@@ -5187,35 +5221,65 @@
         document.getElementById('fb').innerHTML = ""; 
         
         inputField.value = "";
-        inputField.placeholder = isAdvancedMode ? (currentStep === 1 ? "Gõ cụm từ tiếng Đức..." : "Gõ trọn vẹn câu B2...") : (currentStep === 1 ? "Gõ từ gốc..." : "Gõ cụm từ đầy đủ...");
+        inputField.placeholder = isAdvancedMode ? (currentStep === 1 ? "Gõ cụm từ tiếng Đức..." : "Gõ trọn vẹn câu ví dụ B2...") : (currentStep === 1 ? "Gõ từ gốc..." : "Gõ cụm từ đầy đủ...");
         inputField.style.background = "rgba(0,0,0,0.2)";
-        updateDots(); setTimeout(() => inputField.focus(), 50);
+        
+        updateDots();
+        setTimeout(() => inputField.focus(), 50);
     }
 
     function updateDots() {
-        const v = session[idx]; const dotsContainer = document.getElementById('dots');
-        dotsContainer.style.display = "flex"; dotsContainer.style.flexDirection = "column"; dotsContainer.style.alignItems = "center"; dotsContainer.style.gap = "10px";
+        const v = session[idx];
+        const dotsContainer = document.getElementById('dots');
+        
+        dotsContainer.style.display = "flex";
+        dotsContainer.style.flexDirection = "column";
+        dotsContainer.style.alignItems = "center";
+        dotsContainer.style.gap = "10px";
 
         if (penaltyMode) {
-            dotsContainer.innerHTML = `<div style="display: flex; gap: 8px;">${[1,2,3].map(i => `<div class="dot ${penaltyCount >= i ? 'active' : ''}" style="${penaltyCount >= i ? 'background:var(--danger); box-shadow: 0 0 10px var(--danger);' : ''}"></div>`).join('')}</div><div style="font-size: 10px; color: var(--danger); font-weight: bold;">BITTE CẨN THẬN!</div>`;
+            dotsContainer.innerHTML = `
+                <div style="display: flex; gap: 8px;">
+                    ${[1,2,3].map(i => `<div class="dot ${penaltyCount >= i ? 'active' : ''}" style="${penaltyCount >= i ? 'background:var(--danger); box-shadow: 0 0 10px var(--danger);' : ''}"></div>`).join('')}
+                </div>
+                <div style="font-size: 10px; color: var(--danger); font-weight: bold;">BITTE CẨN THẬN!</div>
+            `;
         } else {
-            dotsContainer.innerHTML = `<div style="display: flex; gap: 6px;">${[1,2,3].map(i => `<div class="dot ${mastery[v.word].s >= i ? 'active' : ''}" style="width: 6px; height: 6px; ${mastery[v.word].s >= i ? 'background: #fbbf24; box-shadow: 0 0 8px #fbbf24;' : ''}"></div>`).join('')}</div>
-                <div style="display: flex; gap: 12px; align-items: center;"><div class="dot ${currentStep >= 1 ? 'active' : ''}" style="width: 10px; height: 10px; border: 1px solid var(--primary);" title="Bước 1"></div><div style="width: 20px; height: 1px; background: var(--border);"></div><div class="dot ${currentStep >= 2 ? 'active' : ''}" style="width: 10px; height: 10px; border: 1px solid var(--primary);" title="Bước 2"></div></div>`;
+            dotsContainer.innerHTML = `
+                <div style="display: flex; gap: 6px;">
+                    ${[1,2,3].map(i => `
+                        <div class="dot ${mastery[v.word].s >= i ? 'active' : ''}" 
+                             style="width: 6px; height: 6px; ${mastery[v.word].s >= i ? 'background: #fbbf24; box-shadow: 0 0 8px #fbbf24;' : ''}">
+                        </div>`).join('')}
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div class="dot ${currentStep >= 1 ? 'active' : ''}" style="width: 10px; height: 10px; border: 1px solid var(--primary);" title="Bước 1"></div>
+                    <div style="width: 20px; height: 1px; background: var(--border);"></div>
+                    <div class="dot ${currentStep >= 2 ? 'active' : ''}" style="width: 10px; height: 10px; border: 1px solid var(--primary);" title="Bước 2"></div>
+                </div>
+            `;
         }
     }
 
     function processCheck() {
         if (isTransitioning || isWaitingForNext) return; 
-        const input = document.getElementById('ans-input'); const v = session[idx];
+
+        const input = document.getElementById('ans-input');
+        const v = session[idx];
         const target = isAdvancedMode ? (currentStep === 1 ? v.ans : v.b2_ex) : (currentStep === 1 ? v.word : v.ans);
         const correct = normalizeGerman(input.value) === normalizeGerman(target);
 
         if (!correct && currentStep === 1 && (v.type||"").toLowerCase().includes("nomen") && !penaltyMode && !isAdvancedMode) {
             const parts = target.split(',');
-            if (parts.length > 1 && normalizeGerman(input.value) === normalizeGerman(parts[0])) {
-                input.style.background = "rgba(251, 191, 36, 0.3)"; 
-                document.getElementById('fb').innerHTML = `<div style="color: #fbbf24; font-weight: bold; margin-top: 10px;">⚠️ Bạn thiếu số nhiều rồi! Thêm dấu phẩy và đuôi số nhiều nhé.<br><span style="font-size: 12px; opacity: 0.8;">Gợi ý: ${target}</span></div>`;
-                return; 
+            if (parts.length > 1) {
+                if (normalizeGerman(input.value) === normalizeGerman(parts[0])) {
+                    input.style.background = "rgba(251, 191, 36, 0.3)"; 
+                    document.getElementById('fb').innerHTML = `
+                        <div style="color: #fbbf24; font-weight: bold; margin-top: 10px;">
+                            ⚠️ Bạn thiếu số nhiều rồi! Thêm dấu phẩy và đuôi số nhiều nhé.<br><span style="font-size: 12px; opacity: 0.8;">Gợi ý: ${target}</span>
+                        </div>`;
+                    return; 
+                }
             }
         }
 
@@ -5223,30 +5287,71 @@
             speakGerman(target);
             if (penaltyMode) {
                 if (++penaltyCount >= 3) {
-                    penaltyMode = false; penaltyCount = 0; input.style.background = "var(--success)"; isTransitioning = true; 
-                    setTimeout(() => { if (currentStep === 1) { currentStep = 2; showWord(); } else { currentStep = 1; idx++; showWord(); } isTransitioning = false; }, 200); 
+                    penaltyMode = false;
+                    penaltyCount = 0;
+                    input.style.background = "var(--success)";
+                    isTransitioning = true; 
+                    
+                    setTimeout(() => {
+                        if (currentStep === 1) { currentStep = 2; showWord(); } else { currentStep = 1; idx++; showWord(); }
+                        isTransitioning = false; 
+                    }, 200); 
                 } else {
-                    input.value = ""; input.style.background = "var(--success)"; setTimeout(() => input.style.background = "rgba(248, 113, 113, 0.2)", 200); updateDots();
+                    input.value = ""; input.style.background = "var(--success)";
+                    setTimeout(() => input.style.background = "rgba(248, 113, 113, 0.2)", 200);
+                    updateDots();
                 }
             } else {
-                input.style.background = "var(--success)"; isTransitioning = true; 
+                input.style.background = "var(--success)";
+                isTransitioning = true; 
+                
                 if (currentStep === 1) {
-                    setTimeout(() => { currentStep = 2; isTransitioning = false; showWord(); }, 150);
+                    setTimeout(() => {
+                        currentStep = 2; 
+                        isTransitioning = false; 
+                        showWord(); 
+                    }, 150);
                 } else {
-                    if (!isAdvancedMode && !isNoStreakMode) { mastery[v.word].s = isMixedMode ? 4 : mastery[v.word].s + 1; save(); }
-                    setTimeout(() => { currentStep = 1; idx++; isTransitioning = false; showWord(); }, 150); 
+                    // CHỈ LƯU STREAK NẾU KHÔNG PHẢI CHẾ ĐỘ ÔN NHANH
+                    if (!isAdvancedMode && !isNoStreakMode) { 
+                        if (isMixedMode) {
+                            mastery[v.word].s = 4; 
+                        } else {
+                            mastery[v.word].s++; 
+                        }
+                        save(); 
+                    }
+                    
+                    setTimeout(() => {
+                        currentStep = 1; 
+                        idx++; 
+                        isTransitioning = false; 
+                        showWord(); 
+                    }, 150); 
                 }
             }
         } else {
+            // NẾU SAI
             speakGerman(target);
+            
             if (isNoStreakMode) {
-                input.style.background = "rgba(248, 113, 113, 0.2)"; showDetailFeedback(v, false); isWaitingForNext = true;
+                // LOGIC CHẾ ĐỘ ÔN NHANH: Không phạt 3 lần, không xóa streak
+                input.style.background = "rgba(248, 113, 113, 0.2)";
+                showDetailFeedback(v, false);
+                isWaitingForNext = true; // Bật cờ chờ Enter để qua câu mới
             } else {
+                // LOGIC BÌNH THƯỜNG / HỖN HỢP: Xóa Streak, phạt 3 lần
                 if (!penaltyMode) {
-                    if (!isAdvancedMode) { mastery[v.word].s = 0; mastery[v.word].w = (mastery[v.word].w || 0) + 1; save(); renderHeat(); }
+                    if (!isAdvancedMode) {
+                        mastery[v.word].s = 0;
+                        mastery[v.word].w = (mastery[v.word].w || 0) + 1;
+                        save(); renderHeat();
+                    }
                     penaltyMode = true; penaltyCount = 0; 
                 } else { penaltyCount = 0; }
-                input.style.background = "rgba(248, 113, 113, 0.2)"; updateDots(); showDetailFeedback(v, false);
+                input.style.background = "rgba(248, 113, 113, 0.2)";
+                updateDots(); 
+                showDetailFeedback(v, false);
             }
         }
     }
@@ -5255,13 +5360,16 @@
         const fb = document.getElementById('fb');
         const primaryDisplay = isAdvancedMode ? (currentStep === 1 ? v.ans : v.b2_ex) : (currentStep === 1 ? v.word : v.ans);
         const secondaryDisplay = isAdvancedMode ? (currentStep === 1 ? v.word : v.ans) : (currentStep === 1 ? v.ans : v.word);
-        let warningText = isNoStreakMode ? "⚠️ Sai rồi! (Streak được bảo toàn). Hãy xem kỹ đáp án và <u style='color:#fff'>bấm Enter</u> để đi tiếp!" : "⚠️ Sai rồi! Hãy gõ lại chính xác 3 lần! /Falsch! Bitte geben Sie es dreimal richtig ein!";
+
+        let warningText = "⚠️ Sai rồi! Hãy gõ lại chính xác 3 lần! /Falsch! Bitte geben Sie es dreimal richtig ein!";
+        if (isNoStreakMode) {
+            warningText = "⚠️ Sai rồi! (Streak được bảo toàn). Hãy xem kỹ đáp án và <u style='color:#fff'>bấm Enter</u> để đi tiếp!";
+        }
 
         fb.innerHTML = `
             <div style="cursor:default; margin-top:15px; padding:15px; background:rgba(255,255,255,0.05); border-radius:16px; text-align:left; border: 1px solid ${isCorrect ? 'var(--success)' : 'var(--danger)'}">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; color:var(--primary); font-weight:700; margin-bottom:5px; font-size:16px;">
-                    <div>🇩🇪 ${primaryDisplay}</div>
-                    <button class="speaker-btn" onclick="event.stopPropagation(); speakGerman('${primaryDisplay.replace(/'/g, "\\'")}')">🔊</button>
+                <div style="color:var(--primary); font-weight:700; margin-bottom:5px; font-size:16px;">
+                    🇩🇪 ${primaryDisplay} <span onclick="event.stopPropagation(); speakGerman('${primaryDisplay.replace(/'/g, "\\'")}')" style="cursor:pointer">🔊</span>
                 </div>
                 ${!isCorrect ? `<div style="font-size:12px; color:rgba(255,255,255,0.5); margin-bottom:10px;">Ghi chú: ${secondaryDisplay}</div>` : ''}
                 <div style="font-size:12px; margin-bottom:5px; color:var(--success)">VN (Gốc): ${v.vnword}</div>
@@ -5276,19 +5384,36 @@
         `;
     }
 
+    // UPDATE: XỬ LÝ ENTER CHO CHẾ ĐỘ CHỜ (KHI GÕ SAI Ở ÔN NHANH)
    window.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
+            // 1. KHÓA CHẶT TÍNH NĂNG XUỐNG DÒNG: 
+            // Đảm bảo dù gõ phạt 3 lần hay 10 lần, con trỏ chuột vẫn ở dòng đầu tiên, không bị tụt chữ.
             e.preventDefault(); 
+            
             if (isTransitioning) return; 
-            const menuScreen = document.getElementById('menu-screen'); const quizScreen = document.getElementById('quiz-screen'); const input = document.getElementById('ans-input');
+
+            const menuScreen = document.getElementById('menu-screen');
+            const quizScreen = document.getElementById('quiz-screen');
+            const input = document.getElementById('ans-input');
+
             if (!menuScreen.classList.contains('hidden')) { startSession('normal'); return; }
             if (document.getElementById('finish-card')) { location.reload(); return; }
             if (!quizScreen.classList.contains('hidden')) {
+                // 2. GIỮ NGUYÊN TÍNH NĂNG CHỜ BẤM ENTER CỦA BẠN
                 if (typeof isWaitingForNext !== 'undefined' && isWaitingForNext) {
                     isWaitingForNext = false;
-                    if (currentStep === 1) { currentStep = 2; } else { currentStep = 1; idx++; }
-                    showWord(); return;
+                    if (currentStep === 1) {
+                        currentStep = 2; // Qua bước cụm từ
+                    } else {
+                        currentStep = 1;
+                        idx++; // Qua từ tiếp theo
+                    }
+                    showWord();
+                    return;
                 }
+                
+                // 3. XỬ LÝ KIỂM TRA TỪ
                 if (input && input.value.trim() !== "") { processCheck(); }
             }
         }
@@ -5297,12 +5422,22 @@
     function renderHeat() {
         const cloud = document.getElementById('heat-cloud');
         const fails = data.filter(v => (mastery[v.word].w || 0) > 0).sort((a,b) => mastery[b.word].w - mastery[a.word].w);
-        if (fails.length === 0) { cloud.innerHTML = `<p style="text-align:center; font-size:12px; opacity:0.4">Chưa có dữ liệu heatmap.</p>`; return; }
+        
+        if (fails.length === 0) {
+            cloud.innerHTML = `<p style="text-align:center; font-size:12px; opacity:0.4">Chưa có dữ liệu heatmap.</p>`; return;
+        }
+
         cloud.innerHTML = fails.map((v, index) => {
-            const failCount = mastery[v.word].w; const fontSize = Math.min(13 + failCount * 2, 22); const opacity = Math.min(0.3 + failCount * 0.15, 1);
-            return `<div class="heat-item" style="border-left: 4px solid rgba(248, 113, 113, ${opacity}); background: rgba(248, 113, 113, 0.05); padding: 12px; margin-bottom: 10px; border-radius: 12px; flex-direction: column; align-items: stretch;">
+            const failCount = mastery[v.word].w;
+            const fontSize = Math.min(13 + failCount * 2, 22); 
+            const opacity = Math.min(0.3 + failCount * 0.15, 1);
+            return `
+                <div class="heat-item" style="border-left: 4px solid rgba(248, 113, 113, ${opacity}); background: rgba(248, 113, 113, 0.05); padding: 12px; margin-bottom: 10px; border-radius: 12px; flex-direction: column; align-items: stretch;">
                     <div style="display:flex; justify-content:space-between; align-items: center; width: 100%;">
-                        <div><b style="font-size: ${fontSize}px; color: var(--danger)">${v.word}</b><span style="font-size: 11px; font-weight: bold; color: var(--danger); background: rgba(248, 113, 113, 0.2); padding: 2px 6px; border-radius: 4px; margin-left: 8px;">Lỗi: ${failCount}</span></div>
+                        <div>
+                            <b style="font-size: ${fontSize}px; color: var(--danger)">${v.word}</b>
+                            <span style="font-size: 11px; font-weight: bold; color: var(--danger); background: rgba(248, 113, 113, 0.2); padding: 2px 6px; border-radius: 4px; margin-left: 8px;">Lỗi: ${failCount}</span>
+                        </div>
                         <button id="heat-btn-${index}" onclick="toggleHeatDetail(${index})" style="background: none; border: 1px solid var(--border); color: var(--text); border-radius: 6px; cursor: pointer; padding: 4px 12px; font-size: 16px; font-weight: bold;">+</button>
                     </div>
                     <div style="font-size: 13px; color: var(--primary); font-weight: 600; margin-top: 5px;">Cụm từ: ${v.ans}</div>
@@ -5313,13 +5448,20 @@
                             <p style="margin: 0 0 4px 0; color: #f8fafc;"><b>B1:</b> ${v.b1_ex}</p><p style="margin: 0 0 10px 0; opacity: 0.7; font-style: italic;">${v.vn_b1}</p>
                             <p style="margin: 0 0 4px 0; color: #f8fafc;"><b>B2:</b> ${v.b2_ex}</p><p style="margin: 0; opacity: 0.7; font-style: italic;">${v.vn_b2}</p>
                         </div>
-                    </div></div>`;
+                    </div>
+                </div>
+            `;
         }).join('');
     }
     
     function toggleHeatDetail(index) {
-        const detailDiv = document.getElementById(`heat-detail-${index}`); const btn = document.getElementById(`heat-btn-${index}`);
-        if (detailDiv.classList.contains('hidden')) { detailDiv.classList.remove('hidden'); btn.innerText = '−'; btn.style.background = 'rgba(255,255,255,0.1)'; } else { detailDiv.classList.add('hidden'); btn.innerText = '+'; btn.style.background = 'none'; }
+        const detailDiv = document.getElementById(`heat-detail-${index}`);
+        const btn = document.getElementById(`heat-btn-${index}`);
+        if (detailDiv.classList.contains('hidden')) {
+            detailDiv.classList.remove('hidden'); btn.innerText = '−'; btn.style.background = 'rgba(255,255,255,0.1)';
+        } else {
+            detailDiv.classList.add('hidden'); btn.innerText = '+'; btn.style.background = 'none';
+        }
     }
 
     function save() { localStorage.setItem('b2_pro_v1', JSON.stringify(mastery)); renderList(); }
