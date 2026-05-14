@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html lang="vi">
-
-
-
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deutsch B2 Pro Trainer</title>
-	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0a0f1d;
@@ -61,7 +57,7 @@
         }
 
         .quiz-vn { font-size: 26px; font-weight: 700; text-align: center; margin: 15px 0; line-height: 1.4; }
-		.type-tag { 
+        .type-tag { 
             display: inline-block; padding: 4px 12px; background: rgba(167, 139, 250, 0.2); 
             color: var(--primary); border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
         }
@@ -110,7 +106,7 @@
     <div id="menu-screen">
         <div class="glass-card">
             <h2>Vokabelübung Kontext B2.1 <span id="lek-stats" style="font-size: 14px; font-weight: normal; color: var(--success); margin-left: 10px; background: rgba(52, 211, 153, 0.1); padding: 4px 10px; border-radius: 12px;">0/0</span></h2>
-			
+            
             <div id="lek-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px;"></div>
             
             <div style="display: flex; gap: 8px; margin-bottom: 20px;">
@@ -144,7 +140,7 @@
     </div>
 
     <div id="quiz-screen" class="hidden">
-		<div style="font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 15px; font-style: italic;">
+        <div style="font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 15px; font-style: italic;">
             💡 <b>Công thức chuẩn:</b> [sich Akk/Dat] + [Giới từ] + jemanden / jemandem / etwas (Akk/Dat) + <b>[Động từ ở cuối]</b>
         </div>
         <div class="glass-card">
@@ -167,15 +163,6 @@
 </div>
 
 <script>
-
-
-
-
-
-
-
-
-
     // BẠN DÁN DATA CỦA BẠN VÀO ĐÂY NHÉ
     const data = [
        {
@@ -190,8 +177,7 @@
         "b2_ex": "Es ist wichtig, dass jeder für seine eigenen Fehler verantwortlich ist.",
         "vn_b2": "Điều quan trọng là mỗi người phải tự chịu trách nhiệm về lỗi lầm của chính mình.",
         "lek": 1
-    },
-	 {
+    }, {
         "word": "die Verunsicherung, en",
         "ans": "eine allgemeine Verunsicherung",
         "type": "Nomen",
@@ -4914,11 +4900,6 @@
 	
 	
 	
-	
-	
-	
-	
-	
     ];
 
     let isMixedMode = false; // Cờ theo dõi chế độ thi tổng hợp
@@ -4937,6 +4918,22 @@
     let isAdvancedMode = false;
     let isTransitioning = false; 
 
+    // --- KÍCH HOẠT ÂM THANH TRÊN ĐIỆN THOẠI MỚI ---
+    // Khởi tạo một đối tượng audio trống để mở khóa Web Audio API trên thiết bị di động
+    function unlockAudio() {
+        if ('speechSynthesis' in window) {
+            const whisper = new SpeechSynthesisUtterance('');
+            whisper.volume = 0; // Đọc thầm
+            window.speechSynthesis.speak(whisper);
+        }
+        // Xóa sự kiện sau khi đã kích hoạt
+        document.body.removeEventListener('touchstart', unlockAudio);
+        document.body.removeEventListener('click', unlockAudio);
+    }
+    
+    document.body.addEventListener('touchstart', unlockAudio);
+    document.body.addEventListener('click', unlockAudio);
+
     const loadVoices = () => {
         return new Promise((resolve) => {
             let voices = window.speechSynthesis.getVoices();
@@ -4951,44 +4948,55 @@
     };
     loadVoices().then(voices => console.log("Voices loaded successfully!"));
 
+    // --- HÀM PHÁT ÂM THANH ĐÃ SỬA LỖI ĐỌC TÊN CÁCH VÀ GIỌNG ---
     function speakGerman(text) {
-    if (!('speechSynthesis' in window)) return;
+        if (!('speechSynthesis' in window)) return;
 
-    // 1. Hủy các yêu cầu đang chờ để tránh bị treo
-    window.speechSynthesis.cancel();
+        // Hủy các yêu cầu đang chờ để tránh bị treo
+        window.speechSynthesis.cancel();
 
-    // 2. "Dịch" từ viết tắt sang chữ đầy đủ để máy đọc đúng chuẩn B2
-    let cleanText = text.split(',')[0].trim();
-    cleanText = cleanText
-        .replace(/\bAkk\b/g, "Akkusativ")
-        .replace(/\bDat\b/g, "Dativ")
-        .replace(/\bNom\b/g, "Nominativ")
-        .replace(/\bGen\b/g, "Genitiv")
-        .replace(/\bjmdn\b/g, "jemanden")
-        .replace(/\bjmdm\b/g, "jemandem")
-        .replace(/\betw\b/g, "etwas")
-        .replace(/\bsich\b/gi, "sich");
+        // Xử lý chuỗi văn bản: dịch viết tắt và chuẩn hóa
+        let cleanText = text.split(',')[0].trim();
+        cleanText = cleanText
+            .replace(/\+\s*(jmdm\.|jmdn\.|jmd\.|etw\.|etwas)\s*\((Da|Akk|D|A|Dat)\)/gi, (match, obj, kasus) => {
+                let k = /Da|D|Dat/i.test(kasus) ? "Dativ" : "Akkusativ";
+                let o = obj.includes('jmdm') ? "jemandem" : obj.includes('jmdn') ? "jemanden" : obj.includes('jmd') ? "jemand" : "etwas";
+                return `plus ${k} ${o}`;
+            })
+            // Ép buộc đọc đúng cách thay vì đánh vần
+            .replace(/\bAkk\b/g, "Akkusativ")
+            .replace(/\bA\b/g, "Akkusativ")
+            .replace(/\bDat\b/g, "Dativ")
+            .replace(/\bDa\b/g, "Dativ")
+            .replace(/\bD\b/g, "Dativ")
+            .replace(/\bNom\b/g, "Nominativ")
+            .replace(/\bGen\b/g, "Genitiv")
+            // Chuẩn hóa đại từ
+            .replace(/\bjmdm\b/gi, "jemandem")
+            .replace(/\bjmdn\b/gi, "jemanden")
+            .replace(/\betw\b/gi, "etwas")
+            // Chuẩn hóa mạo từ
+            .replace(/\b(r|r\.)\/(e|e\.)\s+(\w+)/g, "der $3, die $3")
+            .replace(/\br\.\s/g, "der ")
+            .replace(/\be\.\s/g, "die ")
+            .replace(/\bs\.\s/g, "das ");
 
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = 'de-DE';
-    utterance.rate = 0.85; // Tốc độ vừa phải để nghe rõ đuôi từ
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = 'de-DE';
+        utterance.rate = 0.85; 
 
-    // 3. Logic chọn giọng Stefan hoặc giọng Đức tốt nhất hiện có
-    const voices = window.speechSynthesis.getVoices();
-    // Ưu tiên 1: Stefan (thường trên Windows/Chrome)
-    // Ưu tiên 2: Google Deutsch (cực tốt trên Android)
-    // Ưu tiên 3: Anna hoặc các giọng chất lượng cao (Siri trên iPhone)
-    const preferredVoice = voices.find(v => v.name.includes("Stefan")) || 
-                           voices.find(v => v.name.includes("Google Deutsch")) ||
-                           voices.find(v => v.lang.startsWith("de"));
-    
-    if (preferredVoice) {
-        utterance.voice = preferredVoice;
+        // Lựa chọn giọng đọc tối ưu cho cả máy tính và điện thoại
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.name.includes("Stefan")) || 
+                               voices.find(v => v.name.includes("Google Deutsch")) ||
+                               voices.find(v => v.lang.startsWith("de"));
+        
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+        }
+
+        window.speechSynthesis.speak(utterance);
     }
-
-    // 4. Lệnh phát âm thanh
-    window.speechSynthesis.speak(utterance);
-}
 
     function exportData() {
         const dataStr = JSON.stringify(mastery);
@@ -5445,12 +5453,6 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
         }).join('');
     }
     
-	
-	
-	
-	
-	
-	
     function toggleHeatDetail(index) {
         const detailDiv = document.getElementById(`heat-detail-${index}`);
         const btn = document.getElementById(`heat-btn-${index}`);
@@ -5461,61 +5463,10 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
         }
     }
 
-// Hàm để "đánh thức" hệ thống âm thanh trên điện thoại
-function unlockAudio() {
-    if ('speechSynthesis' in window) {
-        const whisper = new SpeechSynthesisUtterance('');
-        whisper.volume = 0; // Đọc thầm để mở khóa
-        window.speechSynthesis.speak(whisper);
-    }
-}
-
-// Tự động kích hoạt khi người dùng chạm vào màn hình lần đầu tiên
-document.body.addEventListener('touchstart', unlockAudio, { once: true });
-document.body.addEventListener('click', unlockAudio, { once: true });
-
-
-
-
-
-
-
-
-
-
-
-
     function save() { localStorage.setItem('b2_pro_v1', JSON.stringify(mastery)); renderList(); }
     function toggleAll(st) { data.forEach(v => mastery[v.word].a = st); save(); renderList(); }
     function resetStreak() { if(confirm("Xóa streak?")) { data.forEach(v => mastery[v.word].s = 0); save(); renderList(); } }
     function resetHeat() { if(confirm("Xóa heatmap?")) { data.forEach(v => mastery[v.word].w = 0); save(); renderHeat(); } }
-
-
-// Hàm mở khóa âm thanh cho điện thoại
-function resumeAudioContext() {
-    if ('speechSynthesis' in window) {
-        // Phát một đoạn trống để đánh thức hệ thống
-        const silence = new SpeechSynthesisUtterance("");
-        window.speechSynthesis.speak(silence);
-    }
-}
-
-// Lắng nghe lần chạm đầu tiên của người dùng
-document.addEventListener('touchstart', resumeAudioContext, { once: true });
-document.addEventListener('click', resumeAudioContext, { once: true });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     init(); 
 </script>
