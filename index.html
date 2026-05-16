@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html lang="vi">
-
-
-
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deutsch B2 Pro Trainer</title>
-	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0a0f1d;
@@ -22,7 +18,6 @@
         }
 
         body {
-            /* Áp dụng font Nunito cho toàn bộ ứng dụng */
             font-family: 'Nunito', Roboto, Helvetica, Arial, sans-serif;
             background: radial-gradient(circle at top right, #1e1b4b, #0a0f1d);
             color: var(--text);
@@ -45,7 +40,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        h2 { font-weight: 700; font-size: 20px; margin-top: 0; color: var(--primary); text-align: center; }
+        h2 { font-weight: 700; font-size: 20px; margin-top: 0; color: var(--primary); text-align: center; margin-bottom: 5px; }
 
         .btn-main {
             width: 100%; padding: 16px; border-radius: 16px; border: none;
@@ -61,7 +56,7 @@
         }
 
         .quiz-vn { font-size: 26px; font-weight: 700; text-align: center; margin: 15px 0; line-height: 1.4; }
-		.type-tag { 
+        .type-tag { 
             display: inline-block; padding: 4px 12px; background: rgba(167, 139, 250, 0.2); 
             color: var(--primary); border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
         }
@@ -83,10 +78,9 @@
             letter-spacing: 1px; 
             font-variant-ligatures: none; 
             
-            /* 3 DÒNG MỚI DÀNH RIÊNG CHO TEXTAREA */
-            resize: none; /* Cấm kéo giãn khung lung tung */
-            line-height: 1.5; /* Khoảng cách dòng thoáng mắt */
-            overflow: hidden; /* Giấu thanh cuộn dọc cho đẹp */
+            resize: none; 
+            line-height: 1.5; 
+            overflow: hidden; 
         }
 
         .feedback-box { min-height: 70px; margin: 15px 0; text-align: center; font-size: 14px; }
@@ -110,18 +104,20 @@
     <div id="menu-screen">
         <div class="glass-card">
             <h2>Vokabelübung Kontext B2.1 <span id="lek-stats" style="font-size: 14px; font-weight: normal; color: var(--success); margin-left: 10px; background: rgba(52, 211, 153, 0.1); padding: 4px 10px; border-radius: 12px;">0/0</span></h2>
-			
-            <div id="lek-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px;"></div>
+            
+            <div style="font-size: 11px; text-align: center; margin-bottom: 20px; color: rgba(255,255,255,0.6); font-style: italic; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                Vorwort: Ein besonderer Dank geht an das <b>Goethe-Institut</b> für die hervorragende Unterstützung auf meinem Weg zum Deutschlernen.
+            </div>
+
+            <div id="lek-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;"></div>
             
             <div style="display: flex; gap: 8px; margin-bottom: 20px;">
                 <button class="btn-sub" id="btn-fehler" onclick="selectFehler()" style="border-color: var(--danger); color: var(--danger); font-weight: bold; flex: 1;">🚨 Lỗi Sai (Fehler)</button>
                 <button class="btn-main" id="btn-adv" onclick="startAdvancedMode()" style="background: linear-gradient(135deg, #f59e0b, #ef4444); padding: 8px; font-size: 14px; flex: 1; border-radius: 10px;">🔥 Nâng cao B2</button>
             </div>
 
-            <!-- Nút Bắt đầu học bình thường -->
             <button class="btn-main" onclick="startSession('normal')">Bắt đầu học (5 từ)/Lerne (5 Wörter)</button>
             
-            <!-- CHIA NÚT ÔN TẬP LÀM 2 -->
             <div style="display: flex; gap: 8px; margin-top: 10px;">
                 <button class="btn-main" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf); font-size: 14px; padding: 12px; flex: 1;" onclick="startSession('mixed')">🔥 Ôn hỗn hợp (Tính Streak)-Gemischte Lernen</button>
                 <button class="btn-main" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 14px; padding: 12px; flex: 1;" onclick="startSession('quick')">⚡ Ôn nhanh (Không phạt)- Kurzrezension (Kein Steak ging verloren)!</button>
@@ -144,14 +140,14 @@
     </div>
 
     <div id="quiz-screen" class="hidden">
-		<div style="font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 15px; font-style: italic;">
+        <div style="font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 15px; font-style: italic;">
             💡 <b></b> [sich Akk/Dat] + [Präpositionen] + jemand../ etwas (Akk/Dat) + <b>[Verben am Ende]</b>
         </div>
         <div class="glass-card">
             <div class="streak-dots" id="dots"></div>
             <div style="text-align: center;"><span class="type-tag" id="q-type"></span></div>
             <div class="quiz-vn" id="q-vn"></div>
-           <textarea id="ans-input" rows="2" placeholder="Ergänzen Sie bitte den deutschen Text..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true"></textarea>
+            <textarea id="ans-input" rows="2" placeholder="Ergänzen Sie bitte den deutschen Text..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true"></textarea>
             <div class="feedback-box" id="fb"></div>
             <button class="btn-main" id="check-btn" onclick="processCheck()">Checken</button>
             <p onclick="location.reload()" style="text-align: center; font-size: 12px; color: var(--text); cursor: pointer; margin-top: 20px; opacity: 0.6">← Zurück zum Menü</p>
@@ -167,7 +163,6 @@
 </div>
 
 <script>
-
     const data = [
        {
         "word": "verantwortlich",
@@ -182,7 +177,7 @@
         "vn_b2": "Điều quan trọng là mỗi người phải tự chịu trách nhiệm về lỗi lầm của chính mình.",
         "lek": 1
     },
-	 {
+     {
         "word": "die Verunsicherung, en",
         "ans": "eine allgemeine Verunsicherung",
         "type": "Nomen",
@@ -195,7 +190,6 @@
         "vn_b2": "Những thay đổi liên tục của luật pháp dẫn đến một sự bất an lớn cho người dân.",
         "lek": 1
     },
-
    {
         "word": "aussehen",
         "ans": "wie jemand/etwas aussehen",
@@ -222,7 +216,6 @@
         "vn_b2": "Thay vì chỉ trích lỗi sai, chúng ta nên cùng nhau cười về tình huống đó.",
         "lek": 1
     },
-
     {
         "word": "denken",
         "ans": "an jemanden/etwas (Akk) denken",
@@ -287,17 +280,12 @@
         "b2_ex": "Die Leistung der Mitarbeiter wird nach strengen Kriterien bewertet.",
         "vn_b2": "Hiệu suất của nhân viên được đánh giá theo các tiêu chí nghiêm ngặt.",
         "lek": 1
-    },
-   
-	
-	
-	
-	
+    }
     ];
 
-    let isMixedMode = false; // Cờ theo dõi chế độ thi tổng hợp
-    let isNoStreakMode = false; // CỜ MỚI: Theo dõi chế độ Ôn nhanh (Không xóa streak)
-    let isWaitingForNext = false; // CỜ MỚI: Đợi người dùng bấm Enter để qua câu nếu làm sai ở chế độ Ôn nhanh
+    let isMixedMode = false; 
+    let isNoStreakMode = false; 
+    let isWaitingForNext = false; 
 
     let currentLek = localStorage.getItem('b2_last_lek') || 1; 
     if (currentLek !== 'fehler') currentLek = parseInt(currentLek) || 1;
@@ -401,9 +389,7 @@
     function startAdvancedMode() {
         let notMastered = data.filter(v => mastery[v.word].a && mastery[v.word].s < 3);
         if (notMastered.length > 0) {
-            return alert(`🛑 CHƯA ĐỦ ĐIỀU KIỆN LÀM B2!\n\nBạn phải học thuộc (đạt 3/3 🔥) TOÀN BỘ từ vựng và câu sai ở các bài học trước.\n\nBạn còn ${notMastered.length} thẻ chưa hoàn thành!/          Du bist noch nicht für B2 berechtigt!
-Du musst alle Vokabeln und fehlerhaften Sätze aus den vorherigen Lektionen auswendig lernen, um 3/3 🔥 zu erreichen.
-Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
+            return alert(`🛑 CHƯA ĐỦ ĐIỀU KIỆN LÀM B2!\n\nBạn phải học thuộc (đạt 3/3 🔥) TOÀN BỘ từ vựng và câu sai ở các bài học trước.\n\nBạn còn ${notMastered.length} thẻ chưa hoàn thành!/\nDu bist noch nicht für B2 berechtigt!\nDu musst alle Vokabeln und fehlerhaften Sätze aus den vorherigen Lektionen auswendig lernen, um 3/3 🔥 zu erreichen.\nDu hast noch ${notMastered.length} Karten zu bearbeiten!`);
         }
 
         isAdvancedMode = true;
@@ -439,7 +425,8 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
     function init() {
         const grid = document.getElementById('lek-grid');
         grid.innerHTML = "";
-        for(let i=1; i<=12; i++) {
+        grid.style.gridTemplateColumns = "repeat(3, 1fr)";
+        for(let i=1; i<=6; i++) {
             const b = document.createElement('div');
             b.className = `btn-sub ${i === currentLek ? 'active' : ''}`;
             b.style.borderColor = i === currentLek ? 'var(--primary)' : 'var(--border)';
@@ -501,7 +488,6 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
         `).join('');
     }
 
-    // UPDATE: HÀM KHỞI TẠO HỖ TRỢ 3 CHẾ ĐỘ
     function startSession(mode = 'normal') {
         isAdvancedMode = false;
         isMixedMode = (mode === 'mixed' || mode === 'quick');
@@ -510,13 +496,11 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
         let availablePool = [];
 
         if (isMixedMode) {
-            // Lấy từ đã đạt Streak 3
             availablePool = data.filter(v => mastery[v.word].a && mastery[v.word].s >= 3);
             if (availablePool.length === 0) {
                 return alert("Bạn chưa có từ nào đạt đủ Streak 3/3 để ôn tập!");
             }
         } else {
-            // Chế độ học thường (Streak < 3)
             availablePool = data.filter(v => 
                 (currentLek === 'fehler' ? (v.type && v.type.includes("Fehler")) : v.lek == currentLek) && 
                 mastery[v.word].a && 
@@ -527,12 +511,9 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
             }
         }
 
-        // BỐC TỪ VÀ XÁO TRỘN ĐÚNG LOGIC
         if (isMixedMode) {
-            // Chế độ Ôn tập (Hỗn hợp / Nhanh): Xáo trộn TOÀN BỘ kho từ trước, rồi bốc ngẫu nhiên 15 từ
             session = availablePool.sort(() => Math.random() - 0.5).slice(0, 15);
         } else {
-            // Chế độ Học mới: Bốc đúng 5 từ đầu tiên chưa thuộc, rồi xáo trộn thứ tự hỏi
             session = availablePool.slice(0, 5).sort(() => Math.random() - 0.5);
         }
 
@@ -564,7 +545,6 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
         const stepText = isAdvancedMode ? (currentStep === 1 ? "B2 CỤM TỪ (Dịch)" : "B2 VÍ DỤ (Dịch nguyên câu)") : (currentStep === 1 ? "BƯỚC 1: TỪ GỐC/SCHRITT 1: SCHLÜSSELWÖRTER" : "BƯỚC 2: CỤM TỪ/SCHRITT 2: PHRASEN");
         const currentVN = isAdvancedMode ? (currentStep === 1 ? v.vnans : v.vn_b2) : (currentStep === 1 ? v.vnword : v.vnans);
 
-        // Hiển thị thêm Tag ⚡ nếu đang ở chế độ Ôn nhanh
         let quickModeTag = isNoStreakMode ? `<span style="color: #34d399;">⚡ ÔN NHANH</span> | ` : "";
 
         document.getElementById('q-type').innerHTML = `${quickModeTag}Wort ${idx + 1}/${session.length} | <span style="color: #fde047;">${fullType}</span> | ${stepText}`;
@@ -620,6 +600,21 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
         const target = isAdvancedMode ? (currentStep === 1 ? v.ans : v.b2_ex) : (currentStep === 1 ? v.word : v.ans);
         const correct = normalizeGerman(input.value) === normalizeGerman(target);
 
+        // Bổ sung: Bắt lỗi thiếu Kasus
+        if (!correct && !penaltyMode && !isAdvancedMode) {
+            const removeKasus = (str) => normalizeGerman(str).replace(/\b(akkusativ|dativ|genitiv)\b/gi, '').replace(/\s+/g, ' ').trim();
+            if (removeKasus(input.value) === removeKasus(target) && removeKasus(target) !== "") {
+                input.style.background = "rgba(251, 191, 36, 0.3)"; 
+                document.getElementById('fb').innerHTML = `
+                    <div style="color: #fbbf24; font-weight: bold; margin-top: 10px;">
+                        ⚠️ Fast richtig! Dir fehlt nur der Kasus (Akk, Dat, Genitiv...). Bitte ergänzen!<br>
+                        <span style="font-size: 13px; opacity: 0.9;">Bạn viết đúng rồi, nhưng thiếu đuôi cách. Hãy bổ sung nhé!</span><br>
+                        <span style="font-size: 12px; opacity: 0.8;">Gợi ý: ${target}</span>
+                    </div>`;
+                return; 
+            }
+        }
+
         if (!correct && currentStep === 1 && (v.type||"").toLowerCase().includes("nomen") && !penaltyMode && !isAdvancedMode) {
             const parts = target.split(',');
             if (parts.length > 1) {
@@ -648,7 +643,6 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
                         isTransitioning = false; 
                     }, 200); 
                 } else {
-                    // SỬA LỖI MÀU Ở ĐÂY: Hiển thị màu xanh trước, sau 300ms mới xóa chữ và đổi màu đỏ
                     input.style.background = "var(--success)";
                     setTimeout(() => {
                         input.value = ""; 
@@ -667,7 +661,6 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
                         showWord(); 
                     }, 150);
                 } else {
-                    // CHỈ LƯU STREAK NẾU KHÔNG PHẢI CHẾ ĐỘ ÔN NHANH
                     if (!isAdvancedMode && !isNoStreakMode) { 
                         if (isMixedMode) {
                             mastery[v.word].s = 4; 
@@ -686,16 +679,13 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
                 }
             }
         } else {
-            // NẾU SAI
             speakGerman(target);
             
             if (isNoStreakMode) {
-                // LOGIC CHẾ ĐỘ ÔN NHANH: Không phạt 3 lần, không xóa streak
                 input.style.background = "rgba(248, 113, 113, 0.2)";
                 showDetailFeedback(v, false);
-                isWaitingForNext = true; // Bật cờ chờ Enter để qua câu mới
+                isWaitingForNext = true; 
             } else {
-                // LOGIC BÌNH THƯỜNG / HỖN HỢP: Xóa Streak, phạt 3 lần
                 if (!penaltyMode) {
                     if (!isAdvancedMode) {
                         mastery[v.word].s = 0;
@@ -739,11 +729,8 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
         `;
     }
 
-    // UPDATE: XỬ LÝ ENTER CHO CHẾ ĐỘ CHỜ (KHI GÕ SAI Ở ÔN NHANH)
    window.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            // 1. KHÓA CHẶT TÍNH NĂNG XUỐNG DÒNG: 
-            // Đảm bảo dù gõ phạt 3 lần hay 10 lần, con trỏ chuột vẫn ở dòng đầu tiên, không bị tụt chữ.
             e.preventDefault(); 
             
             if (isTransitioning) return; 
@@ -751,27 +738,22 @@ Du hast noch ${notMastered.length} Karten zu bearbeiten!`);
             const menuScreen = document.getElementById('menu-screen');
             const quizScreen = document.getElementById('quiz-screen');
             const input = document.getElementById('ans-input');
-        const v = session[idx];
-        const target = isAdvancedMode ? (currentStep === 1 ? v.ans : v.b2_ex) : (currentStep === 1 ? v.word : v.ans);
-        const correct = normalizeGerman(input.value) === normalizeGerman(target);
 
-        // TÍNH NĂNG MỚI: NHẮC NHỞ THIẾU KASUS (Akk, Dat, Dativ, Genitiv)
-        if (!correct && !penaltyMode && !isAdvancedMode) {
-            const removeKasus = (str) => normalizeGerman(str).replace(/\b(akk|dat|dativ|genitiv|a|d|g)\b/gi, '').replace(/\s+/g, ' ').trim();
-            
-            if (removeKasus(input.value) === removeKasus(target) && removeKasus(target) !== "") {
-                input.style.background = "rgba(251, 191, 36, 0.3)"; 
-                document.getElementById('fb').innerHTML = `
-                    <div style="color: #fbbf24; font-weight: bold; margin-top: 10px;">
-                        ⚠️ Fast richtig! Dir fehlt nur der Kasus (Akk, Dat, Genitiv...). Bitte ergänzen!<br>
-                        <span style="font-size: 13px; opacity: 0.9;">Bạn viết đúng rồi, nhưng thiếu đuôi cách. Hãy bổ sung nhé!</span><br>
-                        <span style="font-size: 12px; opacity: 0.8;">Gợi ý: ${target}</span>
-                    </div>`;
-                return; 
-            }
-        }
+            if (!menuScreen.classList.contains('hidden')) { startSession('normal'); return; }
+            if (document.getElementById('finish-card')) { location.reload(); return; }
+            if (!quizScreen.classList.contains('hidden')) {
+                if (typeof isWaitingForNext !== 'undefined' && isWaitingForNext) {
+                    isWaitingForNext = false;
+                    if (currentStep === 1) {
+                        currentStep = 2;
+                    } else {
+                        currentStep = 1;
+                        idx++;
+                    }
+                    showWord();
+                    return;
+                }
                 
-                // 3. XỬ LÝ KIỂM TRA TỪ
                 if (input && input.value.trim() !== "") { processCheck(); }
             }
         }
