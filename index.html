@@ -27,7 +27,7 @@
             justify-content: center;
         }
 
-        .container { width: 100%; max-width: 420px; }
+        .container { width: 100%; max-width: 420px; box-sizing: border-box; }
 
         .glass-card {
             background: var(--glass);
@@ -38,22 +38,34 @@
             padding: 24px;
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-sizing: border-box;
         }
 
         h2 { font-weight: 700; font-size: 20px; margin-top: 0; color: var(--primary); text-align: center; margin-bottom: 5px; }
 
         .btn-main {
-            width: 100%; padding: 16px; border-radius: 16px; border: none;
+            width: 100%; border-radius: 16px; border: none;
             background: linear-gradient(135deg, #8b5cf6, #d946ef);
-            color: white; font-weight: 700; font-size: 16px; cursor: pointer;
-            line-height: 1.3;
+            color: white; font-weight: 700; cursor: pointer;
+            box-sizing: border-box;
         }
 
         .btn-group { display: flex; gap: 8px; margin-bottom: 15px; }
+        
         .btn-sub {
             flex: 1; padding: 8px; background: rgba(255,255,255,0.05);
             border: 1px solid var(--border); border-radius: 10px;
-            color: var(--text); font-size: 11px; cursor: pointer; text-align: center;
+            color: var(--text); cursor: pointer; text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* Lớp CSS giúp căn giữa các nút có 2 dòng chữ */
+        .flex-center-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
             line-height: 1.3;
         }
 
@@ -73,13 +85,11 @@
             text-align: center; 
             outline: none; 
             box-sizing: border-box;
-            
             font-family: 'Nunito', monospace; 
             font-size: 22px; 
             font-weight: 600; 
             letter-spacing: 1px; 
             font-variant-ligatures: none; 
-            
             resize: none; 
             line-height: 1.5; 
             overflow: hidden; 
@@ -107,49 +117,56 @@
         <div class="glass-card">
             <h2>Vokabelübung Kontext B2.1 <span id="lek-stats" style="font-size: 14px; font-weight: normal; color: var(--success); margin-left: 10px; background: rgba(52, 211, 153, 0.1); padding: 4px 10px; border-radius: 12px;">0/0</span></h2>
             
-            <div style="font-size: 11px; text-align: center; margin-bottom: 20px; color: rgba(255,255,255,0.6); font-style: italic; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-                Vorwort: Ein besonderer Dank geht an das <b>Goethe-Institut</b> für die hervorragende Unterstützung auf meinem Weg zum Deutschlernen.
+            <div style="font-size: 13px; text-align: center; margin-bottom: 20px; color: rgba(255,255,255,0.8); font-style: italic; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                "Es ist wichtig, mit Spaß zu lernen."
             </div>
 
             <div id="lek-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;"></div>
             
             <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-                <button class="btn-sub" id="btn-fehler" onclick="selectFehler()" style="border-color: var(--danger); color: var(--danger); font-weight: bold; flex: 1; padding: 10px;">
-                    🚨 Lỗi Sai<br><span style="font-size: 10px; font-weight: normal;">(Fehler)</span>
+                <button class="btn-sub flex-center-col" id="btn-fehler" onclick="selectFehler()" style="border-color: var(--danger); color: var(--danger); font-weight: bold; flex: 1;">
+                    <span style="font-size: 13px;">🚨 Sửa lại các câu sai</span>
+                    <span style="font-size: 10px; font-weight: normal; margin-top: 3px;">(Fehler wiederholen)</span>
                 </button>
-                <button class="btn-main" id="btn-adv" onclick="startAdvancedMode()" style="background: linear-gradient(135deg, #f59e0b, #ef4444); padding: 10px; font-size: 14px; flex: 1; border-radius: 10px;">
-                    🔥 Nâng cao B2<br><span style="font-size: 11px; font-weight: normal;">(B2 Erweitert)</span>
+                <button class="btn-main flex-center-col" id="btn-adv" onclick="startAdvancedMode()" style="background: linear-gradient(135deg, #f59e0b, #ef4444); flex: 1; border-radius: 10px;">
+                    <span style="font-size: 14px;">🔥 Nâng cao B2</span>
+                    <span style="font-size: 11px; font-weight: normal; margin-top: 3px;">(B2 Erweitert)</span>
                 </button>
             </div>
 
-            <button class="btn-main" onclick="startSession('normal')">
-                Bắt đầu học (5 từ)<br><span style="font-size: 13px; font-weight: normal; opacity: 0.8;">Lerne (5 Wörter)</span>
+            <button class="btn-main flex-center-col" style="padding: 14px;" onclick="startSession('normal')">
+                <span style="font-size: 16px;">Bắt đầu học (5 từ)</span>
+                <span style="font-size: 12px; font-weight: normal; opacity: 0.8; margin-top: 3px;">Lerne (5 Wörter)</span>
             </button>
             
             <div style="display: flex; gap: 8px; margin-top: 10px;">
-                <button class="btn-main" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf); font-size: 14px; padding: 12px; flex: 1;" onclick="startSession('mixed')">
-                    🔥 Ôn hỗn hợp<br><span style="font-size: 11px; font-weight: normal; opacity: 0.9;">(Gemischtes Lernen)</span>
+                <button class="btn-main flex-center-col" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf); flex: 1;" onclick="startSession('mixed')">
+                    <span style="font-size: 14px;">🔥 Ôn hỗn hợp</span>
+                    <span style="font-size: 10px; font-weight: normal; opacity: 0.9; margin-top: 3px;">(Gemischtes Lernen)</span>
                 </button>
-                <button class="btn-main" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 14px; padding: 12px; flex: 1;" onclick="startSession('quick')">
-                    ⚡ Ôn nhanh<br><span style="font-size: 11px; font-weight: normal; opacity: 0.9;">(Kein Streak-Verlust)</span>
+                <button class="btn-main flex-center-col" style="background: linear-gradient(135deg, #10b981, #059669); flex: 1;" onclick="startSession('quick')">
+                    <span style="font-size: 14px;">⚡ Ôn nhanh</span>
+                    <span style="font-size: 10px; font-weight: normal; opacity: 0.9; margin-top: 3px;">(Kein Streak-Verlust)</span>
                 </button>
             </div>
             
             <div style="display: flex; gap: 8px; margin-top: 15px;">
-                <button class="btn-sub" style="color: #34d399; border-color: #34d399; font-weight: bold; padding: 10px;" onclick="exportData()">
-                    💾 Sao lưu Streak<br><span style="font-size: 10px; font-weight: normal;">(Streak-Backup)</span>
+                <button class="btn-sub flex-center-col" style="color: #34d399; border-color: #34d399; font-weight: bold; padding: 10px;" onclick="exportData()">
+                    <span style="font-size: 12px;">💾 Sao lưu Streak</span>
+                    <span style="font-size: 10px; font-weight: normal; margin-top: 2px;">(Backup)</span>
                 </button>
-                <button class="btn-sub" style="color: #60a5fa; border-color: #60a5fa; font-weight: bold; padding: 10px;" onclick="importData()">
-                    📂 Phục hồi Streak<br><span style="font-size: 10px; font-weight: normal;">(Wiederherstellen)</span>
+                <button class="btn-sub flex-center-col" style="color: #60a5fa; border-color: #60a5fa; font-weight: bold; padding: 10px;" onclick="importData()">
+                    <span style="font-size: 12px;">📂 Phục hồi Streak</span>
+                    <span style="font-size: 10px; font-weight: normal; margin-top: 2px;">(Wiederherstellen)</span>
                 </button>
             </div>
         </div>
         
         <div class="glass-card">
             <div class="btn-group">
-                <button class="btn-sub" onclick="toggleAll(true)">Chọn hết<br><span style="font-weight: normal; opacity: 0.7;">Alle auswählen</span></button>
-                <button class="btn-sub" onclick="toggleAll(false)">Bỏ chọn<br><span style="font-weight: normal; opacity: 0.7;">Auswahl aufheben</span></button>
-                <button class="btn-sub" style="color: var(--danger)" onclick="resetStreak()">Xóa Streak<br><span style="font-weight: normal; opacity: 0.7;">Streak löschen</span></button>
+                <button class="btn-sub" onclick="toggleAll(true)" style="font-size: 11px;">Chọn hết / Alle</button>
+                <button class="btn-sub" onclick="toggleAll(false)" style="font-size: 11px;">Bỏ chọn / Keine</button>
+                <button class="btn-sub" style="color: var(--danger); font-size: 11px;" onclick="resetStreak()">Xóa Streak</button>
             </div>
             <div id="vocab-list" style="max-height: 200px; overflow-y: auto;"></div>
         </div>
@@ -165,7 +182,7 @@
             <div class="quiz-vn" id="q-vn"></div>
             <textarea id="ans-input" rows="2" placeholder="Ergänzen Sie bitte den deutschen Text..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true"></textarea>
             <div class="feedback-box" id="fb"></div>
-            <button class="btn-main" id="check-btn" onclick="processCheck()">Checken</button>
+            <button class="btn-main flex-center-col" id="check-btn" onclick="processCheck()" style="padding: 14px; font-size: 16px;">Checken</button>
             <p onclick="location.reload()" style="text-align: center; font-size: 12px; color: var(--text); cursor: pointer; margin-top: 20px; opacity: 0.6">← Zurück zum Menü</p>
         </div>
         <div class="glass-card">
@@ -444,7 +461,7 @@
         grid.style.gridTemplateColumns = "repeat(3, 1fr)";
         for(let i=1; i<=6; i++) {
             const b = document.createElement('div');
-            b.className = `btn-sub ${i === currentLek ? 'active' : ''}`;
+            b.className = `btn-sub flex-center-col ${i === currentLek ? 'active' : ''}`;
             b.style.borderColor = i === currentLek ? 'var(--primary)' : 'var(--border)';
             b.innerText = `Lek ${i}`;
             b.onclick = () => {
@@ -493,13 +510,13 @@
         document.getElementById('vocab-list').innerHTML = currentData.map(v => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border)">
                 <div style="display:flex; align-items:center; flex: 1;">
-                    <input type="checkbox" ${mastery[v.word].a?'checked':''} onchange="mastery['${v.word}'].a=this.checked; save();" style="cursor:pointer">
-                    <div style="margin-left:12px">
-                        <div style="font-size:14px; font-weight:600; color:var(--text)">
+                    <input type="checkbox" ${mastery[v.word].a?'checked':''} onchange="mastery['${v.word}'].a=this.checked; save();" style="cursor:pointer; transform: scale(1.2);">
+                    <div style="margin-left:14px">
+                        <div style="font-size:14px; font-weight:600; color:var(--text); line-height: 1.2;">
                             ${v.word}
                             <span style="font-size: 11px; color: #94a3b8; font-weight: 400; margin-left: 6px; font-style: italic;">(${v.ans})</span>
                         </div>
-                        <div style="font-size:11px; color:rgba(248, 250, 252, 0.5)">${v.vnans}</div>
+                        <div style="font-size:11px; color:rgba(248, 250, 252, 0.5); margin-top: 2px;">${v.vnans}</div>
                     </div>
                 </div>
                 <span style="font-size:11px; font-weight:bold; color:var(--success)">🔥 ${mastery[v.word].s}/3</span>
@@ -548,10 +565,10 @@
         
         if (idx >= session.length) {
             quizScreen.innerHTML = `
-                <div class="glass-card" style="text-align:center" id="finish-card">
-                    <h2 style="color:var(--success)">Fertig! 🥳</h2>
+                <div class="glass-card flex-center-col" style="text-align:center; min-height: 200px;" id="finish-card">
+                    <h2 style="color:var(--success); font-size: 28px;">Fertig! 🥳</h2>
                     <p style="font-size: 14px; opacity: 0.8; margin-bottom:20px">Đã hoàn thành lượt ôn tập này.</p>
-                    <button class="btn-main" onclick="location.reload()">Về Menu (Enter)</button>
+                    <button class="btn-main" style="padding: 14px;" onclick="location.reload()">Về Menu (Enter)</button>
                 </div>`;
             return;
         }
