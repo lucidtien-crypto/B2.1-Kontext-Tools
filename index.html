@@ -46,6 +46,7 @@
             width: 100%; padding: 16px; border-radius: 16px; border: none;
             background: linear-gradient(135deg, #8b5cf6, #d946ef);
             color: white; font-weight: 700; font-size: 16px; cursor: pointer;
+            line-height: 1.3;
         }
 
         .btn-group { display: flex; gap: 8px; margin-bottom: 15px; }
@@ -53,6 +54,7 @@
             flex: 1; padding: 8px; background: rgba(255,255,255,0.05);
             border: 1px solid var(--border); border-radius: 10px;
             color: var(--text); font-size: 11px; cursor: pointer; text-align: center;
+            line-height: 1.3;
         }
 
         .quiz-vn { font-size: 26px; font-weight: 700; text-align: center; margin: 15px 0; line-height: 1.4; }
@@ -106,34 +108,48 @@
             <h2>Vokabelübung Kontext B2.1 <span id="lek-stats" style="font-size: 14px; font-weight: normal; color: var(--success); margin-left: 10px; background: rgba(52, 211, 153, 0.1); padding: 4px 10px; border-radius: 12px;">0/0</span></h2>
             
             <div style="font-size: 11px; text-align: center; margin-bottom: 20px; color: rgba(255,255,255,0.6); font-style: italic; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-                Es ist wichtig, mit Spaß zu lernen.
+                Vorwort: Ein besonderer Dank geht an das <b>Goethe-Institut</b> für die hervorragende Unterstützung auf meinem Weg zum Deutschlernen.
             </div>
 
             <div id="lek-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;"></div>
             
             <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-                <button class="btn-sub" id="btn-fehler" onclick="selectFehler()" style="border-color: var(--danger); color: var(--danger); font-weight: bold; flex: 1;">🚨 Lỗi Sai (Fehler)</button>
-                <button class="btn-main" id="btn-adv" onclick="startAdvancedMode()" style="background: linear-gradient(135deg, #f59e0b, #ef4444); padding: 8px; font-size: 14px; flex: 1; border-radius: 10px;">🔥 Nâng cao B2</button>
+                <button class="btn-sub" id="btn-fehler" onclick="selectFehler()" style="border-color: var(--danger); color: var(--danger); font-weight: bold; flex: 1; padding: 10px;">
+                    🚨 Lỗi Sai<br><span style="font-size: 10px; font-weight: normal;">(Fehler)</span>
+                </button>
+                <button class="btn-main" id="btn-adv" onclick="startAdvancedMode()" style="background: linear-gradient(135deg, #f59e0b, #ef4444); padding: 10px; font-size: 14px; flex: 1; border-radius: 10px;">
+                    🔥 Nâng cao B2<br><span style="font-size: 11px; font-weight: normal;">(B2 Erweitert)</span>
+                </button>
             </div>
 
-            <button class="btn-main" onclick="startSession('normal')">Bắt đầu học (5 từ)/Lerne (5 Wörter)</button>
+            <button class="btn-main" onclick="startSession('normal')">
+                Bắt đầu học (5 từ)<br><span style="font-size: 13px; font-weight: normal; opacity: 0.8;">Lerne (5 Wörter)</span>
+            </button>
             
             <div style="display: flex; gap: 8px; margin-top: 10px;">
-                <button class="btn-main" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf); font-size: 14px; padding: 12px; flex: 1;" onclick="startSession('mixed')">🔥 Ôn hỗn hợp (Tính Streak)-Gemischte Lernen</button>
-                <button class="btn-main" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 14px; padding: 12px; flex: 1;" onclick="startSession('quick')">⚡ Ôn nhanh (Không phạt)- Kurzrezension (Kein Steak ging verloren)!</button>
+                <button class="btn-main" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf); font-size: 14px; padding: 12px; flex: 1;" onclick="startSession('mixed')">
+                    🔥 Ôn hỗn hợp<br><span style="font-size: 11px; font-weight: normal; opacity: 0.9;">(Gemischtes Lernen)</span>
+                </button>
+                <button class="btn-main" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 14px; padding: 12px; flex: 1;" onclick="startSession('quick')">
+                    ⚡ Ôn nhanh<br><span style="font-size: 11px; font-weight: normal; opacity: 0.9;">(Kein Streak-Verlust)</span>
+                </button>
             </div>
             
             <div style="display: flex; gap: 8px; margin-top: 15px;">
-                <button class="btn-sub" style="color: #34d399; border-color: #34d399; font-weight: bold;" onclick="exportData()">💾 Sao lưu Streak / Streak-Backup</button>
-                <button class="btn-sub" style="color: #60a5fa; border-color: #60a5fa; font-weight: bold;" onclick="importData()">📂 Phục hồi Streak / Streak wiederherstellung</button>
+                <button class="btn-sub" style="color: #34d399; border-color: #34d399; font-weight: bold; padding: 10px;" onclick="exportData()">
+                    💾 Sao lưu Streak<br><span style="font-size: 10px; font-weight: normal;">(Streak-Backup)</span>
+                </button>
+                <button class="btn-sub" style="color: #60a5fa; border-color: #60a5fa; font-weight: bold; padding: 10px;" onclick="importData()">
+                    📂 Phục hồi Streak<br><span style="font-size: 10px; font-weight: normal;">(Wiederherstellen)</span>
+                </button>
             </div>
         </div>
         
         <div class="glass-card">
             <div class="btn-group">
-                <button class="btn-sub" onclick="toggleAll(true)">Chọn hết/Alle auswählen</button>
-                <button class="btn-sub" onclick="toggleAll(false)">Bỏ chọn/Auswahl aufheben</button>
-                <button class="btn-sub" style="color: var(--danger)" onclick="resetStreak()">Xóa Streak/Streak löschen</button>
+                <button class="btn-sub" onclick="toggleAll(true)">Chọn hết<br><span style="font-weight: normal; opacity: 0.7;">Alle auswählen</span></button>
+                <button class="btn-sub" onclick="toggleAll(false)">Bỏ chọn<br><span style="font-weight: normal; opacity: 0.7;">Auswahl aufheben</span></button>
+                <button class="btn-sub" style="color: var(--danger)" onclick="resetStreak()">Xóa Streak<br><span style="font-weight: normal; opacity: 0.7;">Streak löschen</span></button>
             </div>
             <div id="vocab-list" style="max-height: 200px; overflow-y: auto;"></div>
         </div>
@@ -479,7 +495,10 @@
                 <div style="display:flex; align-items:center; flex: 1;">
                     <input type="checkbox" ${mastery[v.word].a?'checked':''} onchange="mastery['${v.word}'].a=this.checked; save();" style="cursor:pointer">
                     <div style="margin-left:12px">
-                        <div style="font-size:14px; font-weight:600; color:var(--text)">${v.word}</div>
+                        <div style="font-size:14px; font-weight:600; color:var(--text)">
+                            ${v.word}
+                            <span style="font-size: 11px; color: #94a3b8; font-weight: 400; margin-left: 6px; font-style: italic;">(${v.ans})</span>
+                        </div>
                         <div style="font-size:11px; color:rgba(248, 250, 252, 0.5)">${v.vnans}</div>
                     </div>
                 </div>
@@ -600,7 +619,6 @@
         const target = isAdvancedMode ? (currentStep === 1 ? v.ans : v.b2_ex) : (currentStep === 1 ? v.word : v.ans);
         const correct = normalizeGerman(input.value) === normalizeGerman(target);
 
-        // Bổ sung: Bắt lỗi thiếu Kasus
         if (!correct && !penaltyMode && !isAdvancedMode) {
             const removeKasus = (str) => normalizeGerman(str).replace(/\b(akkusativ|dativ|genitiv)\b/gi, '').replace(/\s+/g, ' ').trim();
             if (removeKasus(input.value) === removeKasus(target) && removeKasus(target) !== "") {
@@ -708,7 +726,7 @@
 
         let warningText = "⚠️ Sai rồi! Hãy gõ lại chính xác 3 lần! /Falsch! Bitte geben Sie es dreimal richtig ein!";
         if (isNoStreakMode) {
-            warningText = "⚠️ Sai rồi! (Streak được bảo toàn). Hãy xem kỹ đáp án và <u style='color:#fff'>bấm Enter</u> để đi tiếp!";
+            warningText = "⚠️ Sai rồi! (Streak được bảo toàn). Hãy xem kỹ đáp án und <u style='color:#fff'>bấm Enter</u> để đi tiếp!";
         }
 
         fb.innerHTML = `
