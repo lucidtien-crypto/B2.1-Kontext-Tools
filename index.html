@@ -36306,7 +36306,16 @@
         });
         currentData.forEach(v => mastery[v.word].s = 0); save(); 
     } }
-    function resetHeat() { if(confirm("Xóa hoàn toàn heatmap?")) { data.forEach(v => mastery[v.word].w = 0); save(); renderHeat(); } }
+    function resetHeat() { if(confirm("Xóa hoàn toàn heatmap?")) { data.forEach(v => mastery[v.word].w = 0); save(); renderHeat(); 
+	
+	
+	}
+	
+}
+
+function restartLastSession() {
+        startSession(lastMode);
+    }
 
     init(); 
 </script>
