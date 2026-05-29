@@ -304,7 +304,7 @@
             <li>
                 <span class="lang-de"><b>Abend lernen (Quick-Modus):</b> Ein sicherer Modus für das nächtliche Wiederholen. Fehler führen hier nicht zum Streak-Verlust.</span>
                 <span class="lang-vi"><b>⚡ Ôn buổi tối (Quick):</b> Chế độ học nhanh và an toàn, dù gõ sai cũng hoàn toàn được bảo toàn chuỗi Streak, không sợ áp lực bị trừ điểm.</span>
-				<span class="lang-de"><b>Für weitere Informationen kontaktieren / Mọi chi tiết xin liên hệ: </b> tien.lengoc10Sep@gmail.com</span>
+                <span class="lang-de"><b>Für weitere Informationen kontaktieren / Mọi chi tiết xin liên hệ: </b> tien.lengoc10Sep@gmail.com</span>
             </li>
         </ul>
         <button class="btn-main" style="padding: 12px; font-size: 14px; border-radius: 12px;" onclick="closeGuide()">Schließen / Đóng lại</button>
@@ -350,8 +350,7 @@
             "lek": 1,
             "ant": "unverantwortlich / [B2] pflichtvergessen (vô trách nhiệm / lơ là bổn phận)"
         },
-		
-		    {
+		   {
             "word": "die Verunsicherung, en",
             "ans": "eine allgemeine Verunsicherung",
             "type": "Nomen",
@@ -35781,45 +35780,6 @@
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-		
     ];
 
     let lastMode = localStorage.getItem('b2_last_mode') || 'normal';
@@ -35840,6 +35800,11 @@
     let currentStep = 1; 
     let isAdvancedMode = false;
     let isTransitioning = false; 
+
+    // BỔ SUNG HÀM restartLastSession() ở đây
+    function restartLastSession() {
+        startSession(lastMode || 'normal');
+    }
 
     function openGuide() {
         document.getElementById('guide-modal').classList.remove('hidden');
@@ -36213,10 +36178,27 @@
             const removeKasusAndPronouns = (str) => normalizeGerman(str).replace(/\b(nominativ|akkusativ|dativ|genitiv|jemanden|jemandem|jemand|etwas)\b/gi, '').replace(/\s+/g, ' ').trim();
             if (removeKasusAndPronouns(input.value) === removeKasusAndPronouns(target) && removeKasusAndPronouns(target) !== "") {
                 input.style.background = "rgba(251, 191, 36, 0.3)"; 
+                
+                // Trích xuất thiếu phần nào
+                let missingComponents = [];
+                const normInput = normalizeGerman(input.value);
+                const normTarget = normalizeGerman(target);
+                
+                if (normTarget.includes("etwas") && !normInput.includes("etwas")) missingComponents.push("etw/etwas");
+                if (normTarget.includes("jemanden") && !normInput.includes("jemanden")) missingComponents.push("jmdn");
+                if (normTarget.includes("jemandem") && !normInput.includes("jemandem")) missingComponents.push("jmdm");
+                if (normTarget.includes("jemand") && !normInput.includes("jemand") && !normInput.includes("jemanden") && !normInput.includes("jemandem")) missingComponents.push("jmd");
+                if (normTarget.includes("akkusativ") && !normInput.includes("akkusativ")) missingComponents.push("Akk");
+                if (normTarget.includes("dativ") && !normInput.includes("dativ")) missingComponents.push("Dat");
+                if (normTarget.includes("nominativ") && !normInput.includes("nominativ")) missingComponents.push("Nom");
+                if (normTarget.includes("genitiv") && !normInput.includes("genitiv")) missingComponents.push("Gen");
+                
+                let missingHintText = missingComponents.length > 0 ? ` (Thiếu: ${missingComponents.join(", ")})` : "";
+
                 document.getElementById('fb').innerHTML = `
                     <div style="color: #fbbf24; font-weight: bold; margin-top: 10px;">
-                        ⚠️ Fast richtig! Dir fehlt nur der Kasus (Nom, Akk, Dat, Gen...) oder ein Pronomen (jmd, etw...).<br>
-                        <span style="font-size: 13px; opacity: 0.9;">Bạn gõ đúng cụm từ rồi, nhưng thiếu đuôi cách hoặc đại từ (jmd/etw). Hãy bổ sung nhé!</span><br>
+                        ⚠️ Fast richtig! Dir fehlt nur der Kasus (Nom, Akk, Dat, Gen...) oder ein Pronomen (jmd, etw...)${missingHintText}.<br>
+                        <span style="font-size: 13px; opacity: 0.9;">Bạn gõ đúng cụm từ rồi, nhưng thiếu đuôi cách hoặc đại từ${missingHintText}. Hãy bổ sung nhé!</span><br>
                         <span style="font-size: 12px; opacity: 0.8;">Gợi ý: ${target}</span>
                     </div>`;
                 return; 
