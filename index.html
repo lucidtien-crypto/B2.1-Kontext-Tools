@@ -173,21 +173,9 @@
         .quiz-lifelines-bar {
             display: flex; justify-content: center; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #60a5fa; background: rgba(96, 165, 250, 0.06); padding: 6px 12px; border-radius: 12px; border: 1px solid rgba(96, 165, 250, 0.1);
         }
-
-        /* Khung điều khiển nhạc Bach nhỏ gọn */
-        .bach-music-bar {
-            display: flex; justify-content: center; align-items: center; gap: 10px; background: rgba(192, 132, 252, 0.05); border: 1px solid rgba(192, 132, 252, 0.15); padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 600; margin-top: -5px; margin-bottom: 15px; color: #e9d5ff;
-        }
-        .bach-music-bar button {
-            border: none; color: #090d16; font-weight: bold; border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 11px; transition: all 0.2s;
-        }
-        .bach-music-bar button:active { opacity: 0.8; }
     </style>
 </head>
 <body>
-
-<!-- Thẻ div ẩn phục vụ chứa Iframe API phát nhạc của Youtube mà không làm ảnh hưởng giao diện -->
-<div id="bach-player" style="display: none;"></div>
 
 <div class="container">
     <div id="menu-screen">
@@ -200,12 +188,6 @@
             </div>
 
             <h2>Vokabelübung Kontext B2.1</h2>
-
-            <!-- Thanh điều khiển nhạc Bach dịu nhẹ thông minh -->
-            <div class="bach-music-bar">
-                <span>🎵 J.S. Bach (Hintergrundmusik - 4% Vol)</span>
-                <button id="music-toggle-btn" onclick="toggleBachMusic()" style="background: var(--success);">PLAY</button>
-            </div>
             
             <div style="font-size: 13px; text-align: center; margin-bottom: 20px; color: rgba(255,255,255,0.6); font-style: italic; margin-top: -5px;">
                 "Es ist wichtig, mit Spaß zu lernen."<br>
@@ -345,74 +327,133 @@
     </div>
 </div>
 
+<div id="typing-modal" class="modal-overlay hidden" onclick="closeTypingGuide()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 style="color: #7dd3fc; border-bottom: none; margin-bottom: 5px;">⌨️ Cách viết đúng (Tippen)</h3>
+        <div style="font-size: 13px; color: #ffffff; font-weight: normal; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Hệ thống chấp nhận viết tắt linh hoạt giúp bạn gõ nhanh hơn.</div>
+        
+        <div style="font-size: 13px; line-height: 1.6; color: #cbd5e1;">
+            <!-- Example 1 -->
+            <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); padding: 14px; border-radius: 14px; margin-bottom: 12px;">
+                <b style="color: var(--primary); display: block; margin-bottom: 10px; font-size: 14px;">1. für jemanden / etwas(Akk) verantwortlich sein</b>
+                <ul style="margin: 0; padding-left: 0; list-style: none; color: #a7f3d0;">
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ für jmdn etw Akk verantwortlich sein</li>
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ für etw jmdn Akk verantwortlich sein</li>
+                    <li style="padding-bottom: 0; border: none;">✔️ für jemanden / etwas(Akk) verantwortlich sein</li>
+                </ul>
+            </div>
+
+            <!-- Example 2 -->
+            <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); padding: 14px; border-radius: 14px; margin-bottom: 12px;">
+                <b style="color: var(--primary); display: block; margin-bottom: 10px; font-size: 14px;">2. der Zuschauer, - / die Zuschauerin, nen</b>
+                <ul style="margin: 0; padding-left: 0; list-style: none; color: #a7f3d0;">
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ r Zuschauer, - e Zuschauerin, nen</li>
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ der Zuschauer, - e Zuschauerin, nen</li>
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ r Zuschauer, - die Zuschauerin, nen</li>
+                    <li style="padding-bottom: 0; border: none;">✔️ der Zuschauer, - / die Zuschauerin, nen</li>
+                </ul>
+            </div>
+
+            <!-- Example 3 -->
+            <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); padding: 14px; border-radius: 14px; margin-bottom: 12px;">
+                <b style="color: var(--primary); display: block; margin-bottom: 10px; font-size: 14px;">3. nach Reichtum und Erfolg (Dat) im Leben (Dat) streben</b>
+                <ul style="margin: 0; padding-left: 0; list-style: none; color: #a7f3d0;">
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ nach Reichtum und Erfolg Dat im Leben Dat streben</li>
+                    <li style="padding-bottom: 0; border: none;">✔️ nach Reichtum und Erfolg (Dat) im Leben (Dat) streben</li>
+                </ul>
+            </div>
+            
+            <!-- Example 4 -->
+            <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); padding: 14px; border-radius: 14px;">
+                <b style="color: var(--primary); display: block; margin-bottom: 10px; font-size: 14px;">4. der/die Fremde, n</b>
+                <ul style="margin: 0; padding-left: 0; list-style: none; color: #a7f3d0;">
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ r e  Fremde, n </li>
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ e r  Fremde, n</li>
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ der die Fremde, n</li>
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ die der Fremde, n</li>
+                    <li style="padding-bottom: 0; border: none;">✔️ der/die Fremde, n</li>
+                </ul>
+            </div>
+        </div>
+        <button class="btn-main" style="padding: 12px; font-size: 14px; border-radius: 12px; margin-top: 20px; background: linear-gradient(135deg, #0ea5e9, #3b82f6);" onclick="closeTypingGuide()">Verstanden / Đã hiểu</button>
+    </div>
+</div>
+
 <div id="guide-modal" class="modal-overlay hidden" onclick="closeGuide()">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <h3>💡 Anleitung / Hướng dẫn sử dụng</h3>
+        <h3>💡 Hướng dẫn sử dụng (Anleitung)</h3>
         <ul>
             <!-- Bản thiết kế Nâng cấp Cảnh báo Backup (Gradient nền lụa thơ mộng, pro) -->
             <li style="background: linear-gradient(135deg, #9333ea, #db2777); padding: 18px; border-radius: 16px; border: none; box-shadow: 0 8px 25px rgba(219, 39, 119, 0.3); margin-bottom: 20px; text-align: left;">
                 <div style="background: #ffffff; color: #db2777; display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 11px; margin-bottom: 10px; text-transform: uppercase; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                     WICHTIG / QUAN TRỌNG
                 </div>
-                <span class="lang-de" style="color: #ffffff; font-weight: 800; font-size: 16px; margin-bottom: 6px;">💾 Datensicherung (Backup)</span>
-                <span class="lang-de" style="color: #fdf2f8; font-weight: 600; line-height: 1.4;">Bitte denken Sie daran, Ihren Streak regelmäßig zu sichern! Browser leeren oft automatisch ihren Cache, was zum Verlust Ihres Fortschritts führen kann. Ein kurzes Backup schützt Ihre harte Arbeit!</span>
                 
+                <span class="lang-vi" style="color: #ffffff; font-weight: 800; font-size: 15px; margin-bottom: 6px; display: block;">💾 Quan trọng: Sao lưu dữ liệu</span>
+                <span class="lang-vi" style="color: #ffffff; font-weight: 600; line-height: 1.4; display: block;">Bạn nhớ bấm nút "Sao lưu Streak", nếu không tiến độ học của bạn có thể sẽ mất. Chỉ tốn 1 giây sao lưu để bảo vệ thành quả của mình!</span>
+                            
                 <div style="height: 1px; background: rgba(255,255,255,0.25); margin: 12px 0;"></div>
-                
-                <span class="lang-vi" style="color: #ffffff; font-weight: 800; font-size: 15px; margin-bottom: 6px;">💾 Mẹo nhỏ: Sao lưu dữ liệu (Backup)</span>
-                <span class="lang-vi" style="color: #fdf2f8; font-weight: 600; line-height: 1.4;">Bạn nhớ bấm nút "Sao lưu Streak" định kỳ nhé! Trình duyệt web đôi khi tự dọn dẹp bộ nhớ (Cache) và có thể làm mất tiến độ học của bạn. Chỉ tốn 1 giây sao lưu để bảo vệ thành quả của mình!</span>
+
+                <span class="lang-de" style="color: rgba(255,255,255,0.6); font-weight: 800; font-size: 13px; margin-bottom: 4px; display: block;">💾 Datensicherung (Backup)</span>
+                <span class="lang-de" style="color: rgba(255,255,255,0.5); font-weight: 600; line-height: 1.4; font-size: 12px; display: block;">Klicken Sie auf die Schaltfläche „Backup“, sonst geht Ihr Fortschritt verloren.</span>
             </li>
 
+            <li>
+                <span class="lang-vi" style="color: var(--primary); font-weight: 700; display: block;">✨ Chấp nhận chữ viết tắt</span>
+                <span class="lang-vi" style="color: #ffffff; display: block;">Hệ thống chấp nhận các từ gõ tắt cho các cách ngữ pháp (Nom, Akk, Dat, Gen) và các đại từ (jmd, jmdn, jmdm, etw) và không cần ngoặc đơn để giúp bạn tăng tốc độ làm bài.</span>
+            
+                <span class="lang-de" style="color: #64748b; font-weight: 700; display: block; margin-top: 8px;">✨ Akzeptierte Abkürzungen</span>
+                <span class="lang-de" style="color: #64748b; display: block; font-size: 12.5px;">Das System akzeptiert Kurzformen (Nom, Akk, Dat, Gen, Pronomen) ohne Klammern.</span>
+            </li>
+            
+            <li>
+                <span class="lang-vi" style="color: #ffffff; display: block;"><b>Lọc bài học (Lektion):</b> Bấm chọn các Lek (1-6) để ôn tập. Bài học đang chọn sẽ hiện dạng khối màu cam.</span>
+                <span class="lang-de" style="color: #64748b; display: block; margin-top: 4px; font-size: 12.5px;"><b>Lektionen auswählen:</b> Wählen Sie die Lektionen (1-6). Die aktive Lektion ist markiert.</span>
+            </li>
+            
+            <li>
+                <span class="lang-vi" style="color: #ffffff; display: block;"><b>Học theo 2 bước:</b> Chia rõ ràng: Bước 1 gõ từ gốc (đối với Danh từ bắt buộc gõ kèm đuôi số nhiều), Bước 2 gõ đầy đủ cụm từ cố định hay gặp.</span>
+                <span class="lang-de" style="color: #64748b; display: block; margin-top: 4px; font-size: 12.5px;"><b>2-Schritte-Methode:</b> Schritt 1: Stammwort (inkl. Plural). Schritt 2: feste Kollokation.</span>
+            </li>
+            
             <li style="border: 1px solid rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.05); padding: 10px; border-radius: 12px; margin-top: 12px;">
-                <span class="lang-de" style="color: #60a5fa; font-weight: 700;">🛟 Rettungsringe (Lifelines)</span>
-                <span class="lang-de">Sie haben täglich 3 Rettungsringe für alle Lektionen. Bei einem Fehler schützt ein Klick auf den Rettungsring Ihren Streak vor dem Verlust. Sie müssen das Wort jedoch sofort fehlerfrei neu eintippen. Das System wird täglich um 2:00 Uhr UTC (00:00 Uhr in Deutschland) zurückgesetzt.</span>
-                <span class="lang-vi" style="color: #60a5fa; font-weight: 700;">🛟 Cơ chế Phao Cứu Sinh (Lifelines)</span>
-                <span class="lang-vi">Mỗi ngày bạn có tối đa 3 phao cứu sinh dùng chung cho mọi bài học. Khi gõ sai, bạn có thể chọn kích hoạt phao để bảo toàn chuỗi Streak hiện tại, tuy nhiên bạn bắt buộc phải gõ lại đúng từ đó để đi tiếp. Phao làm mới vào lúc 2:00 UTC (tức 00h đêm tại Đức) hàng ngày.</span>
-            </li>
-            <li>
-                <span class="lang-de" style="color: var(--primary); font-weight: 700;">✨ Akzeptierte Abkürzungen</span>
-                <span class="lang-de">Das System akzeptiert Kurzformen wie Grammatikkasus (Nom, Akk, Dat, Gen) und Pronomen (jmd, jmdn, jmdm, etw), einschließlich Klammern, um das Tippen zu beschleunigen.</span>
-                <span class="lang-vi" style="color: var(--primary); font-weight: 700;">✨ Chấp nhận chữ viết tắt</span>
-                <span class="lang-vi">Hệ thống chấp nhận các từ gõ tắt cho các cách ngữ pháp (Nom, Akk, Dat, Gen) và các đại từ (jmd, jmdn, jmdm, etw) và không cần ngoặc đơn để giúp bạn tăng tốc độ làm bài tối đa.</span>
-            </li>
-            <li>
-                <span class="lang-de"><b>Lektionen auswählen:</b> Wählen Sie die Lektionen (1-6) aus. Die active Lektion wird als solider Block angezeigt, um die Augen nachts zu schonen.</span>
-                <span class="lang-vi"><b>Lọc bài học (Lektion):</b> Bấm chọn các Lek (1-6) để ôn tập. Bài học đang chọn sẽ hiện dạng khối màu cam cháy đặc để tạo điểm nhấn trực quan tốt.</span>
-            </li>
-            <li>
-                <span class="lang-de"><b>2-Schritte-Lernmethode:</b> Jedes Wort hat 2 Phasen: Schritt 1 fordert das Stammwort (Substantive inkl. Pluralform), Schritt 2 verlangt die feste Kollokation.</span>
-                <span class="lang-vi"><b>Học theo 2 bước:</b> Chia rõ ràng: Bước 1 gõ từ gốc (đối với Danh từ bắt buộc gõ kèm đuôi số nhiều), Bước 2 gõ đầy đủ cụm từ cố định hay gặp.</span>
+                <span class="lang-vi" style="color: #60a5fa; font-weight: 700; display: block; margin-bottom: 4px;">🛟 Cơ chế Phao Cứu Sinh (Lifelines)</span>
+                <span class="lang-vi" style="color: #ffffff; display: block;">Mỗi ngày bạn có tối đa 3 phao dùng chung. Khi gõ sai, bạn có thể kích hoạt phao để bảo toàn chuỗi Streak hiện tại. Làm mới vào lúc 02:00 UTC giờ Đức hàng ngày.</span>
+                
+                <span class="lang-de" style="color: rgba(96, 165, 250, 0.5); font-weight: 700; display: block; margin-top: 8px;">🛟 Rettungsringe (Lifelines)</span>
+                <span class="lang-de" style="color: #64748b; display: block; font-size: 12.5px;">Täglich 3 Rettungsringe. Schützt Ihren Streak vor Verlust bei Fehlern.</span>
             </li>
         </ul>
         
         <div id="dont-show-again-container" style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 10px; border: 1px solid var(--border);">
             <input type="checkbox" id="dont-show-guide-checkbox" style="cursor: pointer; transform: scale(1.2);">
-            <label for="dont-show-guide-checkbox" style="font-size: 13px; color: #cbd5e1; cursor: pointer; user-select: none;">Không hiện bảng hướng dẫn này khi mở app nữa / Nicht mehr anzeigen</label>
+            <label for="dont-show-guide-checkbox" style="font-size: 13px; color: #cbd5e1; cursor: pointer; user-select: none;">Không hiện bảng hướng dẫn này khi mở app nữa</label>
         </div>
 
-        <button class="btn-main" style="padding: 12px; font-size: 14px; border-radius: 12px;" onclick="handleCloseGuideButton()">Schließen / Đóng lại</button>
+        <button class="btn-main" style="padding: 12px; font-size: 14px; border-radius: 12px;" onclick="handleCloseGuideButton()">Đóng lại (Schließen)</button>
     </div>
 </div>
 
 <div id="lerntipp-modal" class="modal-overlay hidden" onclick="closeLernTipp()">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <h3>🧠 Lern-Tipp / Phương pháp ghi nhớ</h3>
+        <h3>🧠 Phương pháp ghi nhớ (Lern-Tipp)</h3>
         <div style="font-size: 13px; line-height: 1.6; color: #cbd5e1;">
-            <p style="border-left: 3px solid var(--primary); padding-left: 10px; margin-bottom: 15px;">
-                <b style="color: #c084fc;">DE:</b> Jedes Mal, wenn Sie eine Weile gelernt haben, zeigt die <b>Heat-Map</b> diejenigen Wörter an, bei denen Sie die meisten Fehler gemacht haben. Der effektivste Weg, diese dauerhaft im Gedächtnis zu behalten, besteht darin, <b>die 5 am häufigsten falsch geschriebenen Wörter zu nehmen und sie in einem zusammenhängenden Satz zu kombinieren</b>.
+            <p style="border-left: 3px solid var(--warning); padding-left: 10px; margin-bottom: 15px;">
+                <b style="color: #fb923c;">VI:</b> Mỗi khi bạn học một thời gian, phần <b>Heat-map</b> sẽ hiển thị những từ bạn gõ sai nhiều nhất. Cách duy nhất và hiệu quả nhất để ghi nhớ chúng là <b>kết hợp 5 từ sai nhiều nhất đó lại và tự viết thành một câu chuyện/ngữ cảnh hoàn chỉnh</b>.
             </p>
-            <p style="border-left: 3px solid var(--warning); padding-left: 10px; margin-bottom: 20px;">
-                <b style="color: #fb923c;">VI:</b> Mỗi khi bạn học một thời gian, phần <b>Heat-map</b> sẽ hiển thị những từ bạn gõ sai nhiều nhất. Cách duy nhất và hiệu quả nhất để ghi nhớ chúng là <b>kết hợp 5 từ sai nhiều nhất đó lại và tự viết thành một câu truyện/ngữ cảnh hoàn chỉnh</b>.
+            
+            <p style="border-left: 3px solid rgba(192, 132, 252, 0.4); padding-left: 10px; margin-bottom: 20px;">
+                <b style="color: rgba(192, 132, 252, 0.6);">DE:</b> <span style="color: #64748b;">Jedes Mal, wenn Sie lernen, zeigt die <b>Heat-Map</b> Ihre Fehler. Der beste Weg, diese zu merken, besteht darin, <b>die 5 Fehlerwörter in einer Geschichte zu kombinieren</b>.</span>
             </p>
             
             <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); padding: 15px; border-radius: 14px; margin-top: 15px;">
                 <b style="color: var(--success); font-size: 12px; display: block; margin-bottom: 6px;">📝 VÍ DỤ MINH HỌA (BEISPIEL):</b>
-                <i style="color: #e2e8f0; font-size: 12.5px; display: block; line-height: 1.5;">
+                <i style="color: #ffffff; font-size: 13px; display: block; line-height: 1.5;">
                     "Heute habe ich einen alten Freund <b>ansprochen</b> und <b>begrüßt</b>. Wir arbeiten seit 10 Jahren als <b>Informatiker</b>. Er <b>vertritt</b> oft hartnäckig seinen <b>Standpunkt</b>, da sich seine Ansichten von denen der anderen Kollegen stark unterscheiden."
                 </i>
             </div>
         </div>
-        <button class="btn-main" style="padding: 12px; font-size: 14px; border-radius: 12px; margin-top: 20px;" onclick="closeLernTipp()">Schließen / Đóng lại</button>
+        <button class="btn-main" style="padding: 12px; font-size: 14px; border-radius: 12px; margin-top: 20px;" onclick="closeLernTipp()">Đóng lại (Schließen)</button>
     </div>
 </div>
 
@@ -420,7 +461,7 @@
     const data = [
         {
             "word": "verantwortlich",
-            "ans": "für jemanden/etwas verantwortlich sein",
+            "ans": "für jemanden/etwas (Akk) verantwortlich sein",
             "type": "Adjektiv",
             "forms": "ist verantwortlich, war verantwortlich, ist verantwortlich gewesen",
             "vnword": "có trách nhiệm",
@@ -35885,51 +35926,6 @@
     let lastLifelineReset = ""; 
     let isOfferingLifeline = false;
 
-    let bachPlayer = null;
-    let isMusicPlaying = false;
-
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    function onYouTubeIframeAPIReady() {
-        bachPlayer = new YT.Player('bach-player', {
-            height: '0', width: '0',
-            videoId: 'EQHwjg_cYAo',
-            playerVars: {
-                'autoplay': 0, 
-                'loop': 1,
-                'playlist': 'EQHwjg_cYAo',
-                'controls': 0
-            },
-            events: {
-                'onReady': onPlayerReady
-            }
-        });
-    }
-
-    function onPlayerReady(event) {
-        event.target.setVolume(4); 
-    }
-
-    function toggleBachMusic() {
-        if (!bachPlayer || typeof bachPlayer.getPlayerState !== 'function') return;
-        const btn = document.getElementById('music-toggle-btn');
-        
-        if (isMusicPlaying) {
-            bachPlayer.pauseVideo();
-            btn.innerText = "PLAY";
-            btn.style.background = "var(--success)";
-            isMusicPlaying = false;
-        } else {
-            bachPlayer.playVideo();
-            btn.innerText = "PAUSE";
-            btn.style.background = "var(--primary)";
-            isMusicPlaying = true;
-        }
-    }
-
     function backToMenu() {
         document.getElementById('quiz-screen').classList.add('hidden');
         document.getElementById('finish-screen').classList.add('hidden');
@@ -35970,7 +35966,6 @@
         document.getElementById('lerntipp-modal').classList.add('hidden');
     }
 
-    // --- Hàm đóng mở Modal hướng dẫn gõ ---
     function openTypingGuide() {
         document.getElementById('typing-modal').classList.remove('hidden');
     }
