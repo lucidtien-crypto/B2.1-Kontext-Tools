@@ -75,13 +75,12 @@
 
         h2 { font-weight: 800; font-size: 22px; margin: 0 0 15px 0; color: #fff; text-align: center; }
 
-        /* Khung cửa sổ hướng dẫn mờ mịn */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 8, 15, 0.88);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(5, 8, 15, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             display: flex; align-items: center; justify-content: center;
             z-index: 100; padding: 15px; box-sizing: border-box;
         }
@@ -170,21 +169,43 @@
         .dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
 
         .hidden { display: none !important; }
+        
+        .quiz-lifelines-bar {
+            display: flex; justify-content: center; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #60a5fa; background: rgba(96, 165, 250, 0.06); padding: 6px 12px; border-radius: 12px; border: 1px solid rgba(96, 165, 250, 0.1);
+        }
+
+        /* Khung điều khiển nhạc Bach nhỏ gọn */
+        .bach-music-bar {
+            display: flex; justify-content: center; align-items: center; gap: 10px; background: rgba(192, 132, 252, 0.05); border: 1px solid rgba(192, 132, 252, 0.15); padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 600; margin-top: -5px; margin-bottom: 15px; color: #e9d5ff;
+        }
+        .bach-music-bar button {
+            border: none; color: #090d16; font-weight: bold; border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 11px; transition: all 0.2s;
+        }
+        .bach-music-bar button:active { opacity: 0.8; }
     </style>
 </head>
 <body>
+
+<!-- Thẻ div ẩn phục vụ chứa Iframe API phát nhạc của Youtube mà không làm ảnh hưởng giao diện -->
+<div id="bach-player" style="display: none;"></div>
 
 <div class="container">
     <div id="menu-screen">
         <div class="glass-card">
             
             <div class="top-bar">
-                <div class="btn-guide-trigger" onclick="openGuide()">💡 Anleitung / Hướng dẫn</div>
+                <div class="btn-guide-trigger" onclick="openGuide(true)">💡 Anleitung / Hướng dẫn</div>
                 <div class="btn-guide-trigger" onclick="openLernTipp()" style="border-color: rgba(168, 85, 247, 0.4); color: #e9d5ff;">🧠 Lern-Tipp / Cách học tốt</div>
                 <span id="lek-stats" style="font-size: 13px; font-weight: 700; color: var(--success); background: rgba(52, 211, 153, 0.1); padding: 5px 12px; border-radius: 12px;">0/0 🔥</span>
             </div>
 
-        <h2>Vokabelübung Kontext B2.1</h2>
+            <h2>Vokabelübung Kontext B2.1</h2>
+
+            <!-- Thanh điều khiển nhạc Bach dịu nhẹ thông minh -->
+            <div class="bach-music-bar">
+                <span>🎵 J.S. Bach (Hintergrundmusik - 4% Vol)</span>
+                <button id="music-toggle-btn" onclick="toggleBachMusic()" style="background: var(--success);">PLAY</button>
+            </div>
             
             <div style="font-size: 13px; text-align: center; margin-bottom: 20px; color: rgba(255,255,255,0.6); font-style: italic; margin-top: -5px;">
                 "Es ist wichtig, mit Spaß zu lernen."<br>
@@ -242,7 +263,17 @@
     </div>
 
     <div id="quiz-screen" class="hidden">
-        <div style="font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 15px; font-style: italic;">
+        <!-- Khung chứa Nút Cách Gõ và Phao cứu sinh đồng bộ 1 dòng -->
+        <div style="display: flex; justify-content: space-between; align-items: stretch; gap: 8px; margin-top: -5px; margin-bottom: 15px;">
+            <div class="btn-guide-trigger" onclick="openTypingGuide()" style="margin: 0; background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.3); color: #7dd3fc; font-size: 12px; padding: 6px 12px; box-sizing: border-box; flex: 0 0 auto;">
+                ⌨️ Cách gõ (Tippen)
+            </div>
+            <div id="quiz-lifeline-bar" class="quiz-lifelines-bar" style="margin: 0; flex: 1; text-align: center; box-sizing: border-box;">
+                Phao bảo toàn Streak: <span id="quiz-lifelines-icons" style="margin-left: 5px;">🛟 🛟 🛟</span>
+            </div>
+        </div>
+        
+        <div id="quiz-top-info" style="font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 15px; font-style: italic;">
             💡 <b></b> [sich Akk/Dat] + [Präpositionen] + jemand../ etwas (Akk/Dat) + <b>[Verben am Ende]</b>
         </div>
         <div class="glass-card">
@@ -252,7 +283,7 @@
             <textarea id="ans-input" rows="2" placeholder="Ergänzen Sie bitte den deutschen Text..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true"></textarea>
             <div class="feedback-box" id="fb"></div>
             <button class="btn-main flex-center-col" id="check-btn" onclick="processCheck()" style="padding: 14px; font-size: 16px;">Checken</button>
-            <p onclick="location.reload()" style="text-align: center; font-size: 12px; color: var(--text); cursor: pointer; margin-top: 20px; opacity: 0.6">← Zurück zum Menü</p>
+            <p onclick="backToMenu()" style="text-align: center; font-size: 12px; color: var(--text); cursor: pointer; margin-top: 20px; opacity: 0.6">← Zurück zum Menü</p>
         </div>
         <div class="glass-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
@@ -268,8 +299,49 @@
             <h2 style="color:var(--success); font-size: 28px;">Fertig! 🥳</h2>
             <p style="font-size: 14px; opacity: 0.8; margin-bottom:20px">Đã hoàn thành lượt ôn tập này.</p>
             <button class="btn-main" style="padding: 14px;" onclick="restartLastSession()">Học tiếp (Enter)</button>
-            <p onclick="location.reload()" style="font-size: 12px; opacity: 0.6; cursor: pointer; margin-top: 20px;">← Về Menu chính</p>
+            <p onclick="backToMenu()" style="font-size: 12px; opacity: 0.6; cursor: pointer; margin-top: 20px;">← Về Menu chính</p>
         </div>
+    </div>
+</div>
+
+<!-- Modal hướng dẫn nhập chữ mới (Die korrekte Schreibweise) -->
+<div id="typing-modal" class="modal-overlay hidden" onclick="closeTypingGuide()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 style="color: #7dd3fc; border-bottom: none; margin-bottom: 5px;">⌨️ Die korrekte Schreibweise</h3>
+        <div style="font-size: 13px; color: #94a3b8; font-weight: normal; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Cách viết đúng (Chấp nhận viết tắt linh hoạt)</div>
+        
+        <div style="font-size: 13px; line-height: 1.6; color: #cbd5e1;">
+            <!-- Example 1 -->
+            <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); padding: 14px; border-radius: 14px; margin-bottom: 12px;">
+                <b style="color: var(--primary); display: block; margin-bottom: 10px; font-size: 14px;">1. für jemanden / etwas(Akk) verantwortlich sein</b>
+                <ul style="margin: 0; padding-left: 0; list-style: none; color: #a7f3d0;">
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ für jmdn etw Akk verantwortlich sein</li>
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ für etw jmdn Akk verantwortlich sein</li>
+                    <li style="padding-bottom: 0; border: none;">✔️ für jemanden / etwas(Akk) verantwortlich sein</li>
+                </ul>
+            </div>
+
+            <!-- Example 2 -->
+            <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); padding: 14px; border-radius: 14px; margin-bottom: 12px;">
+                <b style="color: var(--primary); display: block; margin-bottom: 10px; font-size: 14px;">2. der Zuschauer, - / die Zuschauerin, nen</b>
+                <ul style="margin: 0; padding-left: 0; list-style: none; color: #a7f3d0;">
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ r Zuschauer, - e Zuschauerin, nen</li>
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ der Zuschauer, - e Zuschauerin, nen</li>
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ r Zuschauer, - die Zuschauerin, nen</li>
+                    <li style="padding-bottom: 0; border: none;">✔️ der Zuschauer, - / die Zuschauerin, nen</li>
+                </ul>
+            </div>
+
+            <!-- Example 3 -->
+            <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); padding: 14px; border-radius: 14px;">
+                <b style="color: var(--primary); display: block; margin-bottom: 10px; font-size: 14px;">3. nach Reichtum und Erfolg (Dat) im Leben (Dat) streben</b>
+                <ul style="margin: 0; padding-left: 0; list-style: none; color: #a7f3d0;">
+                    <li style="margin-bottom: 6px; padding-bottom: 0; border: none;">✔️ nach Reichtum und Erfolg Dat im Leben Dat streben</li>
+                    <li style="padding-bottom: 0; border: none;">✔️ nach Reichtum und Erfolg (Dat) im Leben (Dat) streben</li>
+                </ul>
+            </div>
+        </div>
+        <button class="btn-main" style="padding: 12px; font-size: 14px; border-radius: 12px; margin-top: 20px; background: linear-gradient(135deg, #0ea5e9, #3b82f6);" onclick="closeTypingGuide()">Verstanden / Đã hiểu</button>
     </div>
 </div>
 
@@ -277,11 +349,25 @@
     <div class="modal-content" onclick="event.stopPropagation()">
         <h3>💡 Anleitung / Hướng dẫn sử dụng</h3>
         <ul>
-            <li style="border: 1px solid rgba(251, 146, 60, 0.3); background: rgba(251, 146, 60, 0.05); padding: 10px; border-radius: 12px;">
-                <span class="lang-de" style="color: #fb923c; font-weight: 700;">⚠️ WICHTIG: Datensicherung (Backup)</span>
-                <span class="lang-de">Sichern Sie Ihren Streak regelmäßig, um Datenverlust beim Löschen des Browser-Caches zu vermeiden. Das Konzept der Datenwiederherstellung über Dateien trägt dazu bei. So wird der Fortschritt aufrechterhalten.</span>
-                <span class="lang-vi" style="color: #fb923c; font-weight: 700;">⚠️ QUAN TRỌNG: Sao lưu dữ liệu (Backup)</span>
-                <span class="lang-vi">Hãy bấm nút "Sao lưu Streak" định kỳ để tránh mất tiến độ học khi trình duyệt dọn dẹp bộ nhớ đệm (Cache). Khi cần thiết, hãy sử dụng file đã tải về để "Phục hồi Streak".</span>
+            <!-- Bản thiết kế Nâng cấp Cảnh báo Backup (Gradient nền lụa thơ mộng, pro) -->
+            <li style="background: linear-gradient(135deg, #9333ea, #db2777); padding: 18px; border-radius: 16px; border: none; box-shadow: 0 8px 25px rgba(219, 39, 119, 0.3); margin-bottom: 20px; text-align: left;">
+                <div style="background: #ffffff; color: #db2777; display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 11px; margin-bottom: 10px; text-transform: uppercase; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    WICHTIG / QUAN TRỌNG
+                </div>
+                <span class="lang-de" style="color: #ffffff; font-weight: 800; font-size: 16px; margin-bottom: 6px;">💾 Datensicherung (Backup)</span>
+                <span class="lang-de" style="color: #fdf2f8; font-weight: 600; line-height: 1.4;">Bitte denken Sie daran, Ihren Streak regelmäßig zu sichern! Browser leeren oft automatisch ihren Cache, was zum Verlust Ihres Fortschritts führen kann. Ein kurzes Backup schützt Ihre harte Arbeit!</span>
+                
+                <div style="height: 1px; background: rgba(255,255,255,0.25); margin: 12px 0;"></div>
+                
+                <span class="lang-vi" style="color: #ffffff; font-weight: 800; font-size: 15px; margin-bottom: 6px;">💾 Mẹo nhỏ: Sao lưu dữ liệu (Backup)</span>
+                <span class="lang-vi" style="color: #fdf2f8; font-weight: 600; line-height: 1.4;">Bạn nhớ bấm nút "Sao lưu Streak" định kỳ nhé! Trình duyệt web đôi khi tự dọn dẹp bộ nhớ (Cache) và có thể làm mất tiến độ học của bạn. Chỉ tốn 1 giây sao lưu để bảo vệ thành quả của mình!</span>
+            </li>
+
+            <li style="border: 1px solid rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.05); padding: 10px; border-radius: 12px; margin-top: 12px;">
+                <span class="lang-de" style="color: #60a5fa; font-weight: 700;">🛟 Rettungsringe (Lifelines)</span>
+                <span class="lang-de">Sie haben täglich 3 Rettungsringe für alle Lektionen. Bei einem Fehler schützt ein Klick auf den Rettungsring Ihren Streak vor dem Verlust. Sie müssen das Wort jedoch sofort fehlerfrei neu eintippen. Das System wird täglich um 2:00 Uhr UTC (00:00 Uhr in Deutschland) zurückgesetzt.</span>
+                <span class="lang-vi" style="color: #60a5fa; font-weight: 700;">🛟 Cơ chế Phao Cứu Sinh (Lifelines)</span>
+                <span class="lang-vi">Mỗi ngày bạn có tối đa 3 phao cứu sinh dùng chung cho mọi bài học. Khi gõ sai, bạn có thể chọn kích hoạt phao để bảo toàn chuỗi Streak hiện tại, tuy nhiên bạn bắt buộc phải gõ lại đúng từ đó để đi tiếp. Phao làm mới vào lúc 2:00 UTC (tức 00h đêm tại Đức) hàng ngày.</span>
             </li>
             <li>
                 <span class="lang-de" style="color: var(--primary); font-weight: 700;">✨ Akzeptierte Abkürzungen</span>
@@ -297,17 +383,14 @@
                 <span class="lang-de"><b>2-Schritte-Lernmethode:</b> Jedes Wort hat 2 Phasen: Schritt 1 fordert das Stammwort (Substantive inkl. Pluralform), Schritt 2 verlangt die feste Kollokation.</span>
                 <span class="lang-vi"><b>Học theo 2 bước:</b> Chia rõ ràng: Bước 1 gõ từ gốc (đối với Danh từ bắt buộc gõ kèm đuôi số nhiều), Bước 2 gõ đầy đủ cụm từ cố định hay gặp.</span>
             </li>
-            <li>
-                <span class="lang-de"><b>Test-Modus (Wortschatzprüfung):</b> Nur verfügbar für Wörter mit einem Streak từ 3/3. Bei falscher Eingabe wird der Streak komplett auf 0 zurückgesetzt.</span>
-                <span class="lang-vi"><b>Kiểm tra từ vựng (Test):</b> Chỉ dành cho từ đã đạt Streak 3/3 trở lên. Ở chế độ này, gõ sai sẽ lập tức bị xóa chuỗi Streak về 0 để học lại từ đầu.</span>
-            </li>
-            <li>
-                <span class="lang-de"><b>Abend lernen (Quick-Modus):</b> Ein sicherer Modus für das nächtliche Wiederholen. Fehler führen hier nicht zum Streak-Verlust.</span>
-                <span class="lang-vi"><b>⚡ Ôn buổi tối (Quick):</b> Chế độ học nhanh và an toàn, dù gõ sai cũng hoàn toàn được bảo toàn chuỗi Streak, không sợ áp lực bị trừ điểm.</span>
-                <span class="lang-de"><b>Für weitere Informationen kontaktieren / Mọi chi tiết xin liên hệ: </b> tien.lengoc10Sep@gmail.com</span>
-            </li>
         </ul>
-        <button class="btn-main" style="padding: 12px; font-size: 14px; border-radius: 12px;" onclick="closeGuide()">Schließen / Đóng lại</button>
+        
+        <div id="dont-show-again-container" style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 10px; border: 1px solid var(--border);">
+            <input type="checkbox" id="dont-show-guide-checkbox" style="cursor: pointer; transform: scale(1.2);">
+            <label for="dont-show-guide-checkbox" style="font-size: 13px; color: #cbd5e1; cursor: pointer; user-select: none;">Không hiện bảng hướng dẫn này khi mở app nữa / Nicht mehr anzeigen</label>
+        </div>
+
+        <button class="btn-main" style="padding: 12px; font-size: 14px; border-radius: 12px;" onclick="handleCloseGuideButton()">Schließen / Đóng lại</button>
     </div>
 </div>
 
@@ -334,7 +417,6 @@
 </div>
 
 <script>
-    // Mảng dữ liệu từ vựng của bạn
     const data = [
         {
             "word": "verantwortlich",
@@ -350,6 +432,7 @@
             "lek": 1,
             "ant": "unverantwortlich / [B2] pflichtvergessen (vô trách nhiệm / lơ là bổn phận)"
         },
+		
 		   {
             "word": "die Verunsicherung, en",
             "ans": "eine allgemeine Verunsicherung",
@@ -35777,9 +35860,6 @@
   },
 
 	
-	
-	
-	
     ];
 
     let lastMode = localStorage.getItem('b2_last_mode') || 'normal';
@@ -35801,22 +35881,101 @@
     let isAdvancedMode = false;
     let isTransitioning = false; 
 
-    // BỔ SUNG HÀM restartLastSession() ở đây
+    let lifelines = 3;
+    let lastLifelineReset = ""; 
+    let isOfferingLifeline = false;
+
+    let bachPlayer = null;
+    let isMusicPlaying = false;
+
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    function onYouTubeIframeAPIReady() {
+        bachPlayer = new YT.Player('bach-player', {
+            height: '0', width: '0',
+            videoId: 'EQHwjg_cYAo',
+            playerVars: {
+                'autoplay': 0, 
+                'loop': 1,
+                'playlist': 'EQHwjg_cYAo',
+                'controls': 0
+            },
+            events: {
+                'onReady': onPlayerReady
+            }
+        });
+    }
+
+    function onPlayerReady(event) {
+        event.target.setVolume(4); 
+    }
+
+    function toggleBachMusic() {
+        if (!bachPlayer || typeof bachPlayer.getPlayerState !== 'function') return;
+        const btn = document.getElementById('music-toggle-btn');
+        
+        if (isMusicPlaying) {
+            bachPlayer.pauseVideo();
+            btn.innerText = "PLAY";
+            btn.style.background = "var(--success)";
+            isMusicPlaying = false;
+        } else {
+            bachPlayer.playVideo();
+            btn.innerText = "PAUSE";
+            btn.style.background = "var(--primary)";
+            isMusicPlaying = true;
+        }
+    }
+
+    function backToMenu() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('finish-screen').classList.add('hidden');
+        document.getElementById('menu-screen').classList.remove('hidden');
+        renderList(); 
+    }
+
     function restartLastSession() {
         startSession(lastMode || 'normal');
     }
 
-    function openGuide() {
+    function openGuide(isManualClick = false) {
         document.getElementById('guide-modal').classList.remove('hidden');
+        const checkboxContainer = document.getElementById('dont-show-again-container');
+        if (isManualClick) {
+            checkboxContainer.classList.add('hidden');
+        } else {
+            checkboxContainer.classList.remove('hidden');
+        }
     }
+    
     function closeGuide() {
         document.getElementById('guide-modal').classList.add('hidden');
     }
+
+    function handleCloseGuideButton() {
+        const check = document.getElementById('dont-show-guide-checkbox');
+        if (check && check.checked) {
+            localStorage.setItem('b2_hide_guide_welcome', 'true');
+        }
+        closeGuide();
+    }
+
     function openLernTipp() {
         document.getElementById('lerntipp-modal').classList.remove('hidden');
     }
     function closeLernTipp() {
         document.getElementById('lerntipp-modal').classList.add('hidden');
+    }
+
+    // --- Hàm đóng mở Modal hướng dẫn gõ ---
+    function openTypingGuide() {
+        document.getElementById('typing-modal').classList.remove('hidden');
+    }
+    function closeTypingGuide() {
+        document.getElementById('typing-modal').classList.add('hidden');
     }
 
     const loadVoices = () => {
@@ -35948,6 +36107,69 @@
         renderList();
     }
 
+    function checkAndResetLifelines() {
+        const now = new Date();
+        const resetToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 2, 0, 0, 0));
+        
+        let targetResetTimestamp = "";
+        if (now.getTime() >= resetToday.getTime()) {
+            targetResetTimestamp = resetToday.toISOString().split('T')[0];
+        } else {
+            const yesterday = new Date(resetToday.getTime() - 24 * 60 * 60 * 1000);
+            targetResetTimestamp = yesterday.toISOString().split('T')[0];
+        }
+
+        const storedResetKey = localStorage.getItem('b2_last_lifeline_reset') || "";
+        
+        if (storedResetKey !== targetResetTimestamp) {
+            lifelines = 3;
+            localStorage.setItem('b2_lifelines_count', lifelines);
+            localStorage.setItem('b2_last_lifeline_reset', targetResetTimestamp);
+        } else {
+            const count = localStorage.getItem('b2_lifelines_count');
+            lifelines = count !== null ? parseInt(count) : 3;
+        }
+        
+        updateLifelineUI();
+    }
+
+    function updateLifelineUI() {
+        const iconContainer = document.getElementById('quiz-lifelines-icons');
+        if (iconContainer) {
+            if (lifelines <= 0) {
+                iconContainer.innerHTML = `<span style="color: var(--danger); font-size:12px;">Hết phao hôm nay</span>`;
+            } else {
+                iconContainer.innerHTML = Array(lifelines).fill("🛟").join(" ");
+            }
+        }
+    }
+
+    function useOneLifeline() {
+        if (lifelines > 0 && isOfferingLifeline) {
+            lifelines--;
+            localStorage.setItem('b2_lifelines_count', lifelines);
+            updateLifelineUI();
+            
+            isOfferingLifeline = false; 
+            
+            const checkBtn = document.getElementById('check-btn');
+            checkBtn.innerHTML = "Checken";
+            checkBtn.style.background = "linear-gradient(135deg, #6d28d9, #a21caf)";
+            checkBtn.style.color = "white";
+            
+            penaltyMode = true; 
+            penaltyCount = 0; 
+            
+            const inputField = document.getElementById('ans-input');
+            inputField.value = "";
+            inputField.placeholder = "Đã dùng phao! Nhập lại chính xác để tiếp tục...";
+            inputField.style.background = "rgba(192, 132, 252, 0.25)"; 
+            document.getElementById('fb').innerHTML = `<div style="color: var(--primary); font-weight: bold; text-align: center; margin-top: 5px;">🛟 Kích hoạt phao thành công! Chuỗi Streak được bảo toàn. Hãy tự gõ lại chính xác từ này.</div>`;
+            updateDots();
+            setTimeout(() => inputField.focus(), 50);
+        }
+    }
+
     function startSession(mode = 'normal') {
         lastMode = mode;
         localStorage.setItem('b2_last_mode', mode);
@@ -35993,11 +36215,13 @@
         }
 
         idx = 0; currentStep = 1; penaltyMode = false; penaltyCount = 0; isWaitingForNext = false;
+        isOfferingLifeline = false; 
         
         document.getElementById('menu-screen').classList.add('hidden');
         document.getElementById('finish-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
         
+        checkAndResetLifelines(); 
         renderHeat();
         showWord();
     }
@@ -36073,6 +36297,13 @@
         localStorage.setItem('b2_pro_v1', JSON.stringify(mastery));
         renderList();
         renderHeat();
+
+        checkAndResetLifelines();
+
+        const hideGuideWelcome = localStorage.getItem('b2_hide_guide_welcome');
+        if (hideGuideWelcome !== 'true') {
+            openGuide(false);
+        }
     }
 
     function renderList() {
@@ -36115,6 +36346,14 @@
         const v = session[idx];
         const inputField = document.getElementById('ans-input');
         if (currentStep !== 1 && currentStep !== 2) currentStep = 1;
+        isOfferingLifeline = false; 
+
+        const checkBtn = document.getElementById('check-btn');
+        if (checkBtn) {
+            checkBtn.innerHTML = "Checken";
+            checkBtn.style.background = "linear-gradient(135deg, #6d28d9, #a21caf)";
+            checkBtn.style.color = "white";
+        }
 
         let fullType = (v.type || "Wort").replace(/\bAdj\.?\b/gi, "Adjektiv").replace(/\bAdv\.?\b/gi, "Adverb");
         const stepText = currentStep === 1 ? "BƯỚC 1: TỪ GỐC" : "BƯỚC 2: CỤM TỪ";
@@ -36130,6 +36369,7 @@
         inputField.placeholder = currentStep === 1 ? "Gõ từ gốc..." : "Gõ cụm từ đầy đủ...";
         inputField.style.background = "rgba(0,0,0,0.25)";
         
+        updateLifelineUI(); 
         updateDots();
         setTimeout(() => inputField.focus(), 50);
     }
@@ -36171,6 +36411,24 @@
 
         const input = document.getElementById('ans-input');
         const v = session[idx];
+        
+        if (isOfferingLifeline) {
+            isOfferingLifeline = false;
+            
+            const checkBtn = document.getElementById('check-btn');
+            checkBtn.innerHTML = "Checken";
+            checkBtn.style.background = "linear-gradient(135deg, #6d28d9, #a21caf)";
+            checkBtn.style.color = "white";
+
+            mastery[v.word].s = 0;
+            mastery[v.word].w = (mastery[v.word].w || 0) + 1;
+            save(); renderHeat();
+            penaltyMode = true; penaltyCount = 0; 
+            input.style.background = "rgba(248, 113, 113, 0.2)";
+            updateDots(); showDetailFeedback(v, false);
+            return; 
+        }
+
         const target = currentStep === 1 ? v.word : v.ans;
         const correct = normalizeGerman(input.value) === normalizeGerman(target);
 
@@ -36179,7 +36437,6 @@
             if (removeKasusAndPronouns(input.value) === removeKasusAndPronouns(target) && removeKasusAndPronouns(target) !== "") {
                 input.style.background = "rgba(251, 191, 36, 0.3)"; 
                 
-                // Trích xuất thiếu phần nào
                 let missingComponents = [];
                 const normInput = normalizeGerman(input.value);
                 const normTarget = normalizeGerman(target);
@@ -36256,6 +36513,20 @@
                 showDetailFeedback(v, false);
                 isWaitingForNext = true; 
             } else {
+                
+                if (!penaltyMode && lifelines > 0) {
+                    isOfferingLifeline = true; 
+                    
+                    const checkBtn = document.getElementById('check-btn');
+                    checkBtn.innerHTML = "Bỏ qua phao & Chấp nhận sai (Enter)";
+                    checkBtn.style.background = "rgba(255, 255, 255, 0.08)";
+                    checkBtn.style.color = "#cbd5e1";
+                    
+                    input.style.background = "rgba(251, 146, 60, 0.2)";
+                    showDetailFeedback(v, false, true); 
+                    return;
+                }
+
                 if (!penaltyMode) {
                     mastery[v.word].s = 0;
                     mastery[v.word].w = (mastery[v.word].w || 0) + 1;
@@ -36268,7 +36539,17 @@
         }
     }
 
-    function showDetailFeedback(v, isCorrect) {
+    function toggleHeatDetail(index) {
+        const detailDiv = document.getElementById(`heat-detail-${index}`);
+        const btn = document.getElementById(`heat-btn-${index}`);
+        if (detailDiv.classList.contains('hidden')) {
+            detailDiv.classList.remove('hidden'); btn.innerText = '−'; btn.style.background = 'rgba(255,255,255,0.1)';
+        } else {
+            detailDiv.classList.add('hidden'); btn.innerText = '+'; btn.style.background = 'none';
+        }
+    }
+
+    function showDetailFeedback(v, isCorrect, offerLifeline = false) {
         const fb = document.getElementById('fb');
         const primaryDisplay = currentStep === 1 ? v.word : v.ans;
         const secondaryDisplay = currentStep === 1 ? v.ans : v.word;
@@ -36278,12 +36559,24 @@
             warningText = "⚠️ Sai rồi! (Streak được bảo toàn). Hãy xem kỹ đáp án und <u style='color:#fff'>bấm Enter</u> để đi tiếp!";
         }
 
+        let lifelineButtonHTML = "";
+        if (offerLifeline && lifelines > 0) {
+            warningText = `Oops! Tiếc quá, bạn gõ sai mất rồi. Bạn có muốn dùng Phao cứu sinh để giữ lại điểm Streak không?`;
+            lifelineButtonHTML = `
+                <div style="text-align: center; margin-top: 12px;">
+                    <button class="btn-main" onclick="useOneLifeline()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); padding: 12px 16px; font-size: 14px; border-radius: 12px; width: auto; box-shadow: 0 4px 15px rgba(37,99,235,0.5);">
+                        🛟 BẤM VÀO ĐÂY ĐỂ DÙNG PHAO (Còn ${lifelines})
+                    </button>
+                </div>
+            `;
+        }
+
         fb.innerHTML = `
-            <div style="cursor:default; margin-top:15px; padding:15px; background:rgba(255,255,255,0.05); border-radius:16px; text-align:left; border: 1px solid ${isCorrect ? 'var(--success)' : 'var(--danger)'}">
+            <div style="cursor:default; margin-top:15px; padding:15px; background:rgba(255,255,255,0.05); border-radius:16px; text-align:left; border: 1px solid ${offerLifeline ? 'var(--warning)' : (isCorrect ? 'var(--success)' : 'var(--danger)')}">
                 <div style="color:var(--primary); font-weight:700; margin-bottom:5px; font-size:16px;">
                     🇩🇪 ${primaryDisplay} <span onclick="event.stopPropagation(); speakGerman('${primaryDisplay.replace(/'/g, "\\'")}')" style="cursor:pointer">🔊</span>
                 </div>
-                ${!isCorrect ? `<div style="font-size:12px; color:rgba(255,255,255,0.05); margin-bottom:10px;">Ghi chú: ${secondaryDisplay}</div>` : ''}
+                ${!isCorrect ? `<div style="font-size:12px; color:rgba(255,255,255,0.4); margin-bottom:10px;">Ghi chú: ${secondaryDisplay}</div>` : ''}
                 <div style="font-size:12px; margin-bottom:5px; color:var(--success)">VN (Gốc): ${v.vnword}</div>
                 <div style="font-size:13px; margin-bottom:10px; opacity:0.9">VN (Cụm): ${v.vnans}</div>
                 <div style="font-size:11px; margin-bottom:10px; opacity:0.7; font-style: italic;">${v.forms}</div>
@@ -36298,7 +36591,8 @@
                     <p style="margin:5px 0 2px 0; color: #f8fafc;"><b>B1+:</b> ${v.b1_ex}</p><p style="margin:0 0 10px 0; font-size:12px; opacity:0.7; font-style: italic;">${v.vn_b1}</p>
                     <p style="margin:5px 0 2px 0; color: #f8fafc;"><b>B2:</b> ${v.b2_ex}</p><p style="margin:0 0 5px 0; font-size:12px; opacity:0.7; font-style: italic;">${v.vn_b2}</p>
                 </div>
-                ${!isCorrect ? `<p style="color:var(--danger); font-size:12px; margin-top:10px; text-align:center; font-weight:bold;">${warningText}</p>` : `<p style="color:var(--success); font-size:11px; margin-top:10px; text-align:center;">✨ Chính xác! Tự động lướt qua... ✨</p>`}
+                ${!isCorrect ? `<p style="color:${offerLifeline ? 'var(--warning)' : 'var(--danger)'}; font-size:12.5px; margin-top:10px; text-align:center; font-weight:bold;">${warningText}</p>` : `<p style="color:var(--success); font-size:11px; margin-top:10px; text-align:center;">✨ Chính xác! Tự động lướt qua... ✨</p>`}
+                ${lifelineButtonHTML}
             </div>
         `;
     }
@@ -36317,6 +36611,12 @@
             if (!finishScreen.classList.contains('hidden')) { restartLastSession(); return; }
             
             if (!quizScreen.classList.contains('hidden')) {
+                
+                if (isOfferingLifeline) {
+                    processCheck(); 
+                    return;
+                }
+
                 if (typeof isWaitingForNext !== 'undefined' && isWaitingForNext) {
                     isWaitingForNext = false;
                     if (currentStep === 1) { currentStep = 2; } else { currentStep = 1; idx++; }
@@ -36366,16 +36666,6 @@
                 </div>
             `;
         }).join('');
-    }
-    
-    function toggleHeatDetail(index) {
-        const detailDiv = document.getElementById(`heat-detail-${index}`);
-        const btn = document.getElementById(`heat-btn-${index}`);
-        if (detailDiv.classList.contains('hidden')) {
-            detailDiv.classList.remove('hidden'); btn.innerText = '−'; btn.style.background = 'rgba(255,255,255,0.1)';
-        } else {
-            detailDiv.classList.add('hidden'); btn.innerText = '+'; btn.style.background = 'none';
-        }
     }
 
     function save() { localStorage.setItem('b2_pro_v1', JSON.stringify(mastery)); renderList(); }
