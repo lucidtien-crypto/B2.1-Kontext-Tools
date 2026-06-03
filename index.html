@@ -35911,6 +35911,7 @@
     "lek": "fehler",
     "ant": "ein Unternehmen schließen (đóng cửa doanh nghiệp)"
 },
+
 {
     "word": "bei einer Begegnung (Dativ)",
     "vnword": "trong một cuộc gặp gỡ",
@@ -35925,9 +35926,27 @@
     "lek": "fehler",
     "ant": ""
 },
+{
+  "word": "zunächst trennen und anschließend recyceln",
+  "ans": "Wir können den Müll systematisch aufbereiten, indem wir ihn zunächst trennen und anschließend recyceln.",
+  "type": "Mein Fehler (Wortschatz)",
+  "forms": "trennt und recycelt, trennte und recycelte, hat getrennt und recycelt",
+  "vnword": "đầu tiên phân loại và sau đó tái chế",
+  "vnans": "Chúng ta có thể xử lý rác thải một cách có hệ thống bằng cách đầu tiên phân loại và sau đó tái chế chúng.",
+  "dong_nghia_b1": "sortieren und wiederverwerten",
+  "dong_nghia_b2": "klassifizieren und aufbereiten",
+  "giai_thich_dong_nghia": "Sortieren und wiederverwerten mang nghĩa phân loại và tái sử dụng chung; klassifizieren und aufbereiten mang sắc thái kỹ thuật, quy trình xử lý công nghiệp.",
+  "b1_ex": "Es ist wichtig für die Umwelt, dass wir den Hausmüll zunächst trennen und anschließend recyceln.",
+  "vn_b1": "Việc chúng ta đầu tiên phân loại và sau đó tái chế rác thải sinh hoạt là rất quan trọng đối với môi trường.",
+  "b2_ex": "Wir können den Müll systematisch aufbereiten, indem wir ihn zunächst trennen und anschließend recyceln.",
+  "vn_b2": "Chúng ta có thể xử lý rác thải một cách có hệ thống bằng cách đầu tiên phân loại và sau đó tái chế chúng.",
+  "lek": "fehler",
+  "ant": "zusammenwerfen und verbrennen"
+},
 
 
-//----------------- Từ mới.	
+
+//----------------- Từ mới , fehler các kiểu...	
     ];
 
     let lastMode = localStorage.getItem('b2_last_mode') || 'normal';
@@ -36281,6 +36300,15 @@
     }
 
     function init() {
+        // 1. ĐƯA PHẦN KHỞI TẠO DỮ LIỆU LÊN ĐẦU TIÊN
+        // Để đảm bảo tất cả từ vựng mới đều có điểm số trước khi vẽ UI
+        data.forEach(v => { 
+            if (mastery[v.word] === undefined) {
+                mastery[v.word] = { s: 0, w: 0, a: true }; 
+            }
+        });
+
+        // 2. CÁC CODE VẼ GIAO DIỆN CHẠY BÌNH THƯỜNG Ở DƯỚI
         const grid = document.getElementById('lek-grid');
         grid.innerHTML = "";
         grid.style.gridTemplateColumns = "repeat(3, 1fr)";
@@ -36321,12 +36349,6 @@
         } else if (currentLek === 'advanced') {
             selectAdvancedMode();
         }
-
-        data.forEach(v => { 
-            if (mastery[v.word] === undefined) {
-                mastery[v.word] = { s: 0, w: 0, a: true }; 
-            }
-        });
         
         localStorage.setItem('b2_pro_v1', JSON.stringify(mastery));
         renderList();
