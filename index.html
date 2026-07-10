@@ -490,66 +490,75 @@
     </div>
 </div>
 
+<!-- ==================== DASHBOARD MỚI - ĐẸP & ĐẦY ĐỦ ==================== -->
 <div id="dashboard-modal" class="modal-overlay hidden" onclick="closeDashboard()">
-    <div class="modal-content" style="max-width: 420px; padding: 16px 18px;" onclick="event.stopPropagation()">
+    <div class="modal-content" style="max-width: 420px; padding: 18px 20px;" onclick="event.stopPropagation()">
         
-        <h3 style="color: #38bdf8; text-align: center; margin: 0 0 6px 0; font-size: 17px;">📊 Trạng Thái Sẵn Sàng B2</h3>
+        <h3 style="color: #38bdf8; text-align: center; margin: 0 0 8px 0; font-size: 18px;">📊 Trạng Thái Sẵn Sàng B2</h3>
 
-        <!-- Radar nhỏ gọn hơn -->
-        <div style="margin: 4px auto; max-width: 250px;">
-            <canvas id="radar-chart" width="250" height="250"></canvas>
+        <!-- Radar -->
+        <div style="margin: 8px auto; max-width: 260px;">
+            <canvas id="radar-chart" width="260" height="260"></canvas>
         </div>
 
-        <!-- Điểm -->
-        <div style="text-align: center; margin-bottom: 8px;">
-            <div id="b2-readiness-score" style="font-size: 26px; font-weight: 900; color: #fff;">0%</div>
-            <div id="health-multiplier-display" style="font-size: 12.5px; color: #4ade80; font-weight: 600;"></div>
+        <!-- Điểm tổng thể -->
+        <div style="text-align: center; margin: 8px 0 16px 0;">
+            <div id="b2-readiness-score" style="font-size: 32px; font-weight: 900; color: #fff; line-height: 1;">0%</div>
+            <div style="font-size: 13px; color: #94a3b8; margin-top: 2px;">Mức độ sẵn sàng thi B2</div>
         </div>
 
-        <!-- Tiến độ B2 High -->
-        <div style="background: rgba(15,23,42,0.65); padding: 9px 12px; border-radius: 12px; margin-bottom: 11px; text-align: center;">
-            <div style="font-size: 12px; color: #94a3b8;">Từ vựng B2 High nắm vững</div>
-            <div id="b2-high-progress" style="font-size: 17px; font-weight: 800; color: #c084fc; margin: 2px 0;"></div>
-            <div id="b2-high-forecast" style="font-size: 12px; color: #e2e8f0; line-height: 1.3;"></div>
-        </div>
-
-        <!-- Cập nhật nhanh (Gọn) -->
-        <div style="background: rgba(15,23,42,0.65); padding: 11px; border-radius: 12px; margin-bottom: 10px;">
+        <!-- Tiến độ B2 High + Dự báo -->
+        <div style="background: rgba(15,23,42,0.7); padding: 14px; border-radius: 14px; margin-bottom: 14px; text-align: center;">
+            <div style="font-size: 13px; color: #94a3b8; margin-bottom: 4px;">Từ vựng B2 High nắm vững</div>
+            <div id="b2-high-progress" style="font-size: 20px; font-weight: 800; color: #c084fc; margin-bottom: 6px;"></div>
             
-            <!-- Giấc ngủ - ĐÃ SỬA MÀU CHỮ -->
-            <div style="margin-bottom: 9px;">
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
-                    <button onclick="setSleep('early')" id="sleep-early" class="sleep-btn">Ngủ sớm</button>
-                    <button onclick="setSleep('normal')" id="sleep-normal" class="sleep-btn">Ngủ đủ</button>
-                    <button onclick="setSleep('late')" id="sleep-late" class="sleep-btn">Thức khuya</button>
-                    <button onclick="setSleep('very-late')" id="sleep-very-late" class="sleep-btn">Ngủ ít</button>
+            <!-- Dòng dự báo ngày -->
+            <div id="b2-forecast" style="font-size: 13px; color: #e0f2fe; line-height: 1.4; background: rgba(192,132,252,0.1); padding: 8px 12px; border-radius: 10px;">
+                <!-- Nội dung sẽ được JS điền vào -->
+            </div>
+        </div>
+
+        <!-- Cập nhật nhanh -->
+        <div style="background: rgba(15,23,42,0.7); padding: 14px; border-radius: 14px; margin-bottom: 14px;">
+            
+            <!-- Giấc ngủ -->
+            <div style="margin-bottom: 12px;">
+                <div style="font-size: 12.5px; color: #94a3b8; margin-bottom: 6px; font-weight: 600;">😴 Giấc ngủ hôm qua</div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                    <button onclick="setSleep('early')" id="sleep-early" class="sleep-btn">Ngủ sớm<br><span style="font-size:10px; opacity:0.7">(≥8h)</span></button>
+                    <button onclick="setSleep('normal')" id="sleep-normal" class="sleep-btn">Ngủ đủ<br><span style="font-size:10px; opacity:0.7">(7h)</span></button>
+                    <button onclick="setSleep('late')" id="sleep-late" class="sleep-btn">Thức khuya<br><span style="font-size:10px; opacity:0.7"></span></button>
+                    <button onclick="setSleep('very-late')" id="sleep-very-late" class="sleep-btn">Ngủ ít<br><span style="font-size:10px; opacity:0.7">(&lt;6h)</span></button>
                 </div>
             </div>
 
-            <!-- Hoạt động (2 cột gọn) -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 13px;">
-                <label style="display:flex; align-items:center; gap:5px;">
-                    <input type="checkbox" id="chk-swim" onchange="updateDailyAndRadar()"> 🏊 Bơi/Tập
+            <!-- Hoạt động -->
+            <div style="font-size: 12.5px; color: #94a3b8; margin-bottom: 6px; font-weight: 600;">Hoạt động hôm nay</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 14px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                    <input type="checkbox" id="chk-swim" onchange="updateDailyAndRadar()"> 🏊 Bơi / Tập
                 </label>
-                <label style="display:flex; align-items:center; gap:5px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
                     <input type="checkbox" id="chk-input" onchange="updateDailyAndRadar()"> 🎧 Nghe
                 </label>
-                <label style="display:flex; align-items:center; gap:5px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
                     <input type="checkbox" id="chk-read" onchange="updateDailyAndRadar()"> 📖 Đọc
                 </label>
-                <label style="display:flex; align-items:center; gap:5px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
                     <input type="checkbox" id="chk-write" onchange="updateDailyAndRadar()"> ✍️ Viết
                 </label>
-                <label style="display:flex; align-items:center; gap:5px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
                     <input type="checkbox" id="chk-speak" onchange="updateDailyAndRadar()"> 🗣️ Nói
                 </label>
-                <label style="display:flex; align-items:center; gap:5px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
                     <input type="checkbox" id="chk-grammar" onchange="updateDailyAndRadar()"> 📝 Ngữ pháp
                 </label>
             </div>
         </div>
 
-        <button class="btn-main" style="padding: 10px; font-size: 14.5px; border-radius: 11px;" onclick="closeDashboard()">Lưu & Đóng</button>
+        <button class="btn-main" style="padding: 12px; font-size: 15px; border-radius: 12px; width: 100%;" onclick="closeDashboard()">
+            Lưu & Đóng
+        </button>
     </div>
 </div>
 
@@ -47744,7 +47753,11 @@
                         <div style="font-size:11px; color:rgba(248, 250, 252, 0.5); margin-top: 2px;">${v.vnans}</div>
                     </div>
                 </div>
-                <span style="font-size:11px; font-weight:bold; color:var(--success)">🔥 ${mastery[v.word].s}/3</span>
+					${(() => {
+    const wordData = data.find(w => w.word === v.word);
+    const maxStreak = wordData && wordData.level && wordData.level.includes("B1") ? 2 : 3;
+    return `<span style="font-size:11px; font-weight:bold; color:var(--success)">🔥 ${mastery[v.word].s}/${maxStreak}</span>`;
+})()}
             </div>
         `).join('');
     }
@@ -48187,18 +48200,20 @@ function updateRadarChart() {
     const ctx = document.getElementById('radar-chart');
     if (!ctx) return;
 
-    const b2HighWords = data.filter(v => v.level === currentLevel && v.importance === 'high');
+    // B2 High
+    const b2HighWords = data.filter(v => v.level && v.level.includes("B2") && v.importance === 'high');
     const b2HighMastered = b2HighWords.filter(v => mastery[v.word]?.s >= 3).length;
-    const b2HighPercent = b2HighWords.length > 0 ? Math.round((b2HighMastered / b2HighWords.length) * 100) : 0;
+    const b2HighPercent = b2HighWords.length > 0 ? Math.min(Math.round((b2HighMastered / b2HighWords.length) * 100), 100) : 0;
 
-    const vocabScore = Math.min(b2HighPercent, 100);
+    // B1
+    const b1Words = data.filter(v => v.level && v.level.includes("B1"));
+    const b1Mastered = b1Words.filter(v => mastery[v.word]?.s >= 2).length;
+    const b1Percent = b1Words.length > 0 ? Math.min(Math.round((b1Mastered / b1Words.length) * 100), 100) : 0;
 
-    // === Điểm thực tế hơn ===
-    const inputScore = userStats.inputDone ? 58 : 22;      // Nghe + Đọc
-    const outputScore = userStats.outputDone ? 55 : 20;    // Viết + Nói
-    const healthScore = calculateHealthMultiplier() * 78;
+    const inputScore = Math.min(userStats.inputDone ? 58 : 22, 100);
+    const outputScore = Math.min(userStats.outputDone ? 55 : 20, 100);
+    const healthScore = Math.min(Math.max(calculateHealthMultiplier() * 78, 0), 100);
 
-    // === Độ chính xác (khó đạt 100% hơn) ===
     let accuracyScore = 48;
     const levelWords = data.filter(v => v.level === currentLevel);
     if (levelWords.length > 0) {
@@ -48206,37 +48221,44 @@ function updateRadarChart() {
         accuracyScore = Math.max(100 - (errored / levelWords.length * 95), 28);
     }
 
-    const overall = Math.round(
-        (vocabScore * 0.45) + 
-        (inputScore * 0.15) + 
-        (outputScore * 0.15) + 
-        (healthScore * 0.12) + 
-        (accuracyScore * 0.13)
-    );
+    const overall = Math.round((b2HighPercent * 0.45) + (b1Percent * 0.10) + (inputScore * 0.15) + (outputScore * 0.15) + (healthScore * 0.12) + (accuracyScore * 0.13));
 
-    document.getElementById('b2-readiness-score').innerText = overall + "%";
-    document.getElementById('health-multiplier-display').innerHTML = `Hệ số hôm nay: <b>x${calculateHealthMultiplier().toFixed(1)}</b>`;
-    document.getElementById('b2-high-progress').innerText = `${b2HighMastered}/${b2HighWords.length} từ (${b2HighPercent}%)`;
+    // Cập nhật điểm
+    const scoreEl = document.getElementById('b2-readiness-score');
+    if (scoreEl) scoreEl.textContent = overall + '%';
 
-    let forecast = b2HighPercent >= 78 ? "Bạn đang nắm khá tốt từ B2 High." :
-                   b2HighPercent >= 50 ? `Với nhịp hiện tại, bạn cần thêm khoảng 18–23 ngày để đạt mức khá.` :
-                   "Bạn cần tăng tốc độ nắm từ B2 High.";
+    // Cập nhật tiến độ B2 High
+    const progressEl = document.getElementById('b2-high-progress');
+    if (progressEl) progressEl.innerHTML = `${b2HighMastered} / ${b2HighWords.length} từ <span style="font-size:15px; color:#94a3b8;">(${b2HighPercent}%)</span>`;
 
-    document.getElementById('b2-high-forecast').innerText = forecast;
+    // === DỰ BÁO NGÀY CẦN HỌC ===
+    const forecastEl = document.getElementById('b2-forecast');
+    if (forecastEl) {
+        if (b2HighPercent >= 75) {
+            forecastEl.innerHTML = `🎉 Tuyệt vời! Bạn đã nắm vững khá tốt từ B2 High.`;
+        } else {
+            const remaining = b2HighWords.length - b2HighMastered;
+            // Giả sử trung bình nắm thêm 2.5 từ High mỗi ngày
+            const daysNeeded = Math.ceil(remaining / 2.5);
+            forecastEl.innerHTML = `Với tốc độ hiện tại, bạn cần khoảng <b style="color:#c084fc;">${daysNeeded}–${daysNeeded + 4} ngày</b> nữa để đạt mức khá ổn (75%+).`;
+        }
+    }
 
+    // Vẽ radar
     if (radarChart) radarChart.destroy();
-
     radarChart = new Chart(ctx, {
         type: 'radar',
         data: {
-            labels: ['Từ B2 High', 'Nghe/Đọc', 'Viết/Nói', 'Thể chất', 'Độ chính xác'],
+            labels: ['B2 High', 'B1', 'Nghe/Đọc', 'Nói/Viết', 'Sức khỏe', 'Độ chính xác'],
             datasets: [{
-                data: [vocabScore, inputScore, outputScore, healthScore, accuracyScore],
-                backgroundColor: 'rgba(192, 132, 252, 0.22)',
+                data: [b2HighPercent, b1Percent, inputScore, outputScore, healthScore, accuracyScore],
+                backgroundColor: 'rgba(192, 132, 252, 0.25)',
                 borderColor: '#c084fc',
-                borderWidth: 2.4,
+                borderWidth: 2.5,
                 pointBackgroundColor: '#c084fc',
-                pointRadius: 3.5
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#c084fc'
             }]
         },
         options: {
@@ -48244,12 +48266,11 @@ function updateRadarChart() {
             maintainAspectRatio: true,
             scales: {
                 r: {
-                    angleLines: { color: 'rgba(255,255,255,0.1)' },
-                    grid: { color: 'rgba(255,255,255,0.08)' },
-                    pointLabels: { color: '#e2e8f0', font: { size: 11, weight: 600 } },
+                    beginAtZero: true,
+                    max: 100,
                     ticks: { display: false },
-                    suggestedMin: 0,
-                    suggestedMax: 100
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    angleLines: { color: 'rgba(255,255,255,0.1)' }
                 }
             },
             plugins: { legend: { display: false } }
