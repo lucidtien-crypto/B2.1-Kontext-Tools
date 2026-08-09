@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
-<script src="https://code.responsivevoice.org/responsivevoice.js"></script>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deutsch Pro Trainer</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Thư viện đọc chữ (dự phòng) -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+    
     <style>
         :root {
             --bg: #090d16;
@@ -241,36 +243,12 @@
             
             .btn-main { padding: 12px; font-size: 15px; }
         }
-		
-		.sleep-btn {
-    padding: 7px 4px;
-    border-radius: 8px;
-    border: 1px solid #475569;
-    background: rgba(255,255,255,0.07);
-    color: #e0f2fe;              /* Màu chữ sáng */
-    font-size: 11.5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-}
-
-.sleep-btn:hover {
-    background: rgba(255,255,255,0.12);
-}
-
-/* Khi nút được chọn (active) */
-.sleep-btn[style*="0.35"] {
-    color: #fff !important;
-    font-weight: 700;
-}
-		
-		
-		
-		
     </style>
 </head>
 <body>
+
+<!-- Hidden container for YouTube Audio Player -->
+<div id="yt-player-container" style="position: absolute; opacity: 0; pointer-events: none; width: 10px; height: 10px; overflow: hidden; z-index: -1;"></div>
 
 <div class="container">
     <div id="menu-screen">
@@ -279,7 +257,7 @@
             <div class="top-bar">
                 <div style="display: flex; gap: 8px; flex: 1;">
                     <div class="btn-guide-trigger" onclick="openGuide(true)" style="justify-content: center; padding: 6px 10px;">💡</div>
-                    <div class="btn-guide-trigger" onclick="openDashboard()" style="justify-content: center; flex: 1; background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3);">📊 Bảng Tiến Độ B2</div>
+                    <div id="music-btn" class="btn-guide-trigger" onclick="toggleMusic()" style="justify-content: center; flex: 1; background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3);">🎵 Melodie von Bach</div>
                 </div>
                 <span id="lek-stats" style="font-size: 13px; font-weight: 700; color: var(--success); background: rgba(52, 211, 153, 0.1); padding: 5px 12px; border-radius: 12px; margin-left: 8px;">0/0 🔥</span>
             </div>
@@ -427,7 +405,7 @@
                 
                 <span class="lang-vi" style="color: #ffffff; font-weight: 600; line-height: 1.4; display: block; margin-bottom: 8px;">Lấy <b>5 từ sai nhiều nhất</b> trên <b>Heat-map</b> và viết thành <b>1 ngữ cảnh</b> – đây là cách học tốt nhất!</span>
                 <span class="lang-de" style="color: rgba(255,255,255,0.9); font-weight: 500; font-size: 13px; line-height: 1.4; display: block;"><i>(Die 5 häufigsten Fehlerwörter auf der Heatmap in einen Kontext setzen – das ist die beste Lernmethode!)</i></span>
-                                                                    
+                                                                                        
                 <div style="height: 1px; background: rgba(255,255,255,0.3); margin: 12px 0;"></div>
 
                 <span class="lang-de" style="color: rgba(255,255,255,0.95); font-weight: 800; font-size: 13px; margin-bottom: 4px; display: block;">📝 VÍ DỤ MINH HỌA (BEISPIEL):</span>
@@ -490,82 +468,9 @@
     </div>
 </div>
 
-<!-- ==================== DASHBOARD MỚI - ĐẸP & ĐẦY ĐỦ ==================== -->
-<div id="dashboard-modal" class="modal-overlay hidden" onclick="closeDashboard()">
-    <div class="modal-content" style="max-width: 420px; padding: 18px 20px;" onclick="event.stopPropagation()">
-        
-        <h3 style="color: #38bdf8; text-align: center; margin: 0 0 8px 0; font-size: 18px;">📊 Trạng Thái Sẵn Sàng B2</h3>
-
-        <!-- Radar -->
-        <div style="margin: 8px auto; max-width: 260px;">
-            <canvas id="radar-chart" width="260" height="260"></canvas>
-        </div>
-
-        <!-- Điểm tổng thể -->
-        <div style="text-align: center; margin: 8px 0 16px 0;">
-            <div id="b2-readiness-score" style="font-size: 32px; font-weight: 900; color: #fff; line-height: 1;">0%</div>
-            <div style="font-size: 13px; color: #94a3b8; margin-top: 2px;">Mức độ sẵn sàng thi B2</div>
-        </div>
-
-        <!-- Tiến độ B2 High + Dự báo -->
-        <div style="background: rgba(15,23,42,0.7); padding: 14px; border-radius: 14px; margin-bottom: 14px; text-align: center;">
-            <div style="font-size: 13px; color: #94a3b8; margin-bottom: 4px;">Từ vựng B2 High nắm vững</div>
-            <div id="b2-high-progress" style="font-size: 20px; font-weight: 800; color: #c084fc; margin-bottom: 6px;"></div>
-            
-            <!-- Dòng dự báo ngày -->
-            <div id="b2-forecast" style="font-size: 13px; color: #e0f2fe; line-height: 1.4; background: rgba(192,132,252,0.1); padding: 8px 12px; border-radius: 10px;">
-                <!-- Nội dung sẽ được JS điền vào -->
-            </div>
-        </div>
-
-        <!-- Cập nhật nhanh -->
-        <div style="background: rgba(15,23,42,0.7); padding: 14px; border-radius: 14px; margin-bottom: 14px;">
-            
-            <!-- Giấc ngủ -->
-            <div style="margin-bottom: 12px;">
-                <div style="font-size: 12.5px; color: #94a3b8; margin-bottom: 6px; font-weight: 600;">😴 Giấc ngủ hôm qua</div>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
-                    <button onclick="setSleep('early')" id="sleep-early" class="sleep-btn">Ngủ sớm<br><span style="font-size:10px; opacity:0.7">(≥8h)</span></button>
-                    <button onclick="setSleep('normal')" id="sleep-normal" class="sleep-btn">Ngủ đủ<br><span style="font-size:10px; opacity:0.7">(7h)</span></button>
-                    <button onclick="setSleep('late')" id="sleep-late" class="sleep-btn">Thức khuya<br><span style="font-size:10px; opacity:0.7"></span></button>
-                    <button onclick="setSleep('very-late')" id="sleep-very-late" class="sleep-btn">Ngủ ít<br><span style="font-size:10px; opacity:0.7">(&lt;6h)</span></button>
-                </div>
-            </div>
-
-            <!-- Hoạt động -->
-            <div style="font-size: 12.5px; color: #94a3b8; margin-bottom: 6px; font-weight: 600;">Hoạt động hôm nay</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 14px;">
-                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                    <input type="checkbox" id="chk-swim" onchange="updateDailyAndRadar()"> 🏊 Bơi / Tập
-                </label>
-                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                    <input type="checkbox" id="chk-input" onchange="updateDailyAndRadar()"> 🎧 Nghe
-                </label>
-                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                    <input type="checkbox" id="chk-read" onchange="updateDailyAndRadar()"> 📖 Đọc
-                </label>
-                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                    <input type="checkbox" id="chk-write" onchange="updateDailyAndRadar()"> ✍️ Viết
-                </label>
-                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                    <input type="checkbox" id="chk-speak" onchange="updateDailyAndRadar()"> 🗣️ Nói
-                </label>
-                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                    <input type="checkbox" id="chk-grammar" onchange="updateDailyAndRadar()"> 📝 Ngữ pháp
-                </label>
-            </div>
-        </div>
-
-        <button class="btn-main" style="padding: 12px; font-size: 15px; border-radius: 12px; width: 100%;" onclick="closeDashboard()">
-            Lưu & Đóng
-        </button>
-    </div>
-</div>
-
 <script>
     // BẠN CÓ THỂ THÊM 'importance: "high"' VÀO CÁC TỪ QUAN TRỌNG NHẤT TRONG TƯƠNG LAI Ở ĐÂY
-    const data = 
-       [
+    const data = [
   {
     "word": "die Prüfung, en",
     "ans": "eine Prüfung bestehen",
@@ -582,6 +487,7 @@
     "level": "B1 Goethe",
     "importance": "high"
   },
+  
   {
         "word": "andererseits",
         "ans": "etwas andererseits betrachten",
@@ -51703,16 +51609,695 @@
     "level": "B1+",
     "importance": "high"
   },
+  {
+    "word": "passend",
+    "ans": "passend zu diesem Thema",
+    "type": "Adjektiv (zu + Dativ)",
+    "forms": "passender, am passendsten",
+    "vnword": "phù hợp, thích hợp",
+    "vnans": "phù hợp với chủ đề này",
+    "dong_nghia_b1": "geeignet, richtig",
+    "dong_nghia_b2": "angemessen, adäquat",
+    "giai_thich_dong_nghia": "'Angemessen' mang nghĩa phù hợp với hoàn cảnh, tiêu chuẩn xã hội. 'Adäquat' là từ ngoại lai (Fremdwort) dùng trong văn bản học thuật để chỉ sự tương xứng, vừa vặn.",
+    "b1_ex": "Wir müssen ein Geschenk finden, das passend zu diesem Thema ist.",
+    "vn_b1": "Chúng ta phải tìm một món quà phù hợp với chủ đề này.",
+    "b2_ex": "Um die Zielgruppe effektiv anzusprechen, ist es unerlässlich, eine Marketingstrategie zu entwickeln, die genau passend zu diesem Thema ist.",
+    "vn_b2": "Để tiếp cận nhóm đối tượng mục tiêu một cách hiệu quả, việc phát triển một chiến lược tiếp thị hoàn toàn phù hợp với chủ đề này là điều không thể thiếu.",
+    "lek": "1",
+    "ant": "unpassend, ungeeignet",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "das Pronomen",
+    "ans": "das richtige Pronomen verwenden",
+    "type": "Nomen",
+    "forms": "des Pronomens, die Pronomen",
+    "vnword": "đại từ",
+    "vnans": "sử dụng đúng đại từ",
+    "dong_nghia_b1": "das Fürwort",
+    "dong_nghia_b2": "-",
+    "giai_thich_dong_nghia": "'Fürwort' là từ thuần Đức cho Pronomen, thường dùng ở trường tiểu học, còn Pronomen dùng phổ biến trong sách ngữ pháp.",
+    "b1_ex": "Im Deutschunterricht müssen wir das richtige Pronomen verwenden.",
+    "vn_b1": "Trong giờ học tiếng Đức, chúng ta phải sử dụng đúng đại từ.",
+    "b2_ex": "Um stilistische Wiederholungen in anspruchsvollen Texten zu vermeiden, sollte man konsequent das richtige Pronomen verwenden.",
+    "vn_b2": "Để tránh những sự lặp lại về văn phong trong các văn bản đòi hỏi cao, người ta nên nhất quán sử dụng đúng đại từ.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "das Symbol",
+    "ans": "als Symbol für Frieden gelten",
+    "type": "Nomen",
+    "forms": "des Symbols, die Symbole",
+    "vnword": "biểu tượng",
+    "vnans": "được coi là biểu tượng cho hòa bình",
+    "dong_nghia_b1": "das Zeichen",
+    "dong_nghia_b2": "das Sinnbild, das Emblem",
+    "giai_thich_dong_nghia": "'Zeichen' là dấu hiệu chung, trong khi 'Symbol' hay 'Sinnbild' mang ý nghĩa ẩn dụ sâu sắc hơn đại diện cho một ý niệm.",
+    "b1_ex": "Die weiße Taube kann als Symbol für Frieden gelten.",
+    "vn_b1": "Chim bồ câu trắng có thể được coi là biểu tượng cho hòa bình.",
+    "b2_ex": "In vielen unterschiedlichen Kulturen weltweit kann die weiße Taube historisch als Symbol für Frieden gelten.",
+    "vn_b2": "Trong nhiều nền văn hóa khác nhau trên toàn thế giới, chim bồ câu trắng về mặt lịch sử có thể được coi là biểu tượng cho hòa bình.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "die Zeitwahrnehmung",
+    "ans": "die subjektive Zeitwahrnehmung",
+    "type": "Nomen",
+    "forms": "der Zeitwahrnehmung (Sg.)",
+    "vnword": "sự cảm nhận thời gian",
+    "vnans": "sự cảm nhận thời gian chủ quan",
+    "dong_nghia_b1": "das Zeitempfinden",
+    "dong_nghia_b2": "das Zeitgefühl",
+    "giai_thich_dong_nghia": "'Zeitempfinden' thiên về mặt cảm xúc, trong khi 'Zeitwahrnehmung' là quá trình nhận thức sinh học và tâm lý học của não bộ.",
+    "b1_ex": "Die subjektive Zeitwahrnehmung ist bei jedem Menschen anders.",
+    "vn_b1": "Sự cảm nhận thời gian chủ quan ở mỗi người là khác nhau.",
+    "b2_ex": "Psychologische Studien beweisen, dass extremer Stress oder starke Emotionen die subjektive Zeitwahrnehmung massiv verzerren können.",
+    "vn_b2": "Các nghiên cứu tâm lý học chứng minh rằng căng thẳng tột độ hoặc cảm xúc mạnh có thể bóp méo nghiêm trọng sự cảm nhận thời gian chủ quan.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "zusammenfassen",
+    "ans": "den Text kurz zusammenfassen",
+    "type": "Verb (trennbar)",
+    "forms": "fasst zusammen, fasste zusammen, hat zusammengefasst",
+    "vnword": "tóm tắt",
+    "vnans": "tóm tắt ngắn gọn văn bản",
+    "dong_nghia_b1": "wiederholen, kürzen",
+    "dong_nghia_b2": "resümieren, auf den Punkt bringen",
+    "giai_thich_dong_nghia": "'Resümieren' là từ ngoại lai gốc Pháp, rất hay dùng trong môi trường học thuật, đại học hoặc thuyết trình chuyên nghiệp thay cho zusammenfassen.",
+    "b1_ex": "Kannst du bitte für mich den Text kurz zusammenfassen?",
+    "vn_b1": "Bạn có thể vui lòng tóm tắt ngắn gọn văn bản cho tôi được không?",
+    "b2_ex": "Um der Geschäftsführung einen schnellen Überblick zu verschaffen, wurde der Assistent angewiesen, den Text kurz zusammenfassen zu müssen.",
+    "vn_b2": "Để cung cấp cho ban giám đốc một cái nhìn tổng quan nhanh chóng, người trợ lý đã được chỉ thị phải tóm tắt ngắn gọn văn bản.",
+    "lek": "1",
+    "ant": "ausführlich beschreiben, detaillieren",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "der Akkusativ",
+    "ans": "ein Verb mit Akkusativ",
+    "type": "Nomen",
+    "forms": "des Akkusativs, die Akkusative",
+    "vnword": "cách 4 (đối cách)",
+    "vnans": "một động từ đi với cách 4",
+    "dong_nghia_b1": "der vierte Fall",
+    "dong_nghia_b2": "das direkte Objekt",
+    "giai_thich_dong_nghia": "Trong ngữ pháp tiếng Đức, tân ngữ bị tác động trực tiếp trong câu Akkusativ được gọi là 'direktes Objekt'.",
+    "b1_ex": "Wir müssen im Satz ein Verb mit Akkusativ richtig benutzen.",
+    "vn_b1": "Chúng ta phải sử dụng đúng một động từ đi với cách 4 trong câu.",
+    "b2_ex": "Bei der detaillierten Analyse komplexer Satzstrukturen fällt oft auf, dass der Autor bewusst ein Verb mit Akkusativ bevorzugt.",
+    "vn_b2": "Trong phân tích chi tiết các cấu trúc câu phức tạp, thường nhận thấy rằng tác giả có ý thức ưu tiên một động từ đi với cách 4.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "der Dativ",
+    "ans": "das Objekt im Dativ",
+    "type": "Nomen",
+    "forms": "des Dativs, die Dative",
+    "vnword": "cách 3 (tặng cách)",
+    "vnans": "tân ngữ ở cách 3",
+    "dong_nghia_b1": "der dritte Fall",
+    "dong_nghia_b2": "das indirekte Objekt",
+    "giai_thich_dong_nghia": "Dativ thường đóng vai trò là 'indirektes Objekt', chỉ người hoặc vật tiếp nhận sự ảnh hưởng gián tiếp của hành động.",
+    "b1_ex": "In diesem einfachen Satz steht das Objekt im Dativ.",
+    "vn_b1": "Trong câu đơn giản này, tân ngữ đứng ở cách 3.",
+    "b2_ex": "Um den Lesefluss nicht zu stören, muss der Autor streng darauf achten, dass das Objekt im Dativ grammatikalisch fehlerfrei dekliniert ist.",
+    "vn_b2": "Để không làm gián đoạn mạch đọc, tác giả phải chú ý nghiêm ngặt rằng tân ngữ ở cách 3 được chia không có lỗi ngữ pháp.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "die Ergänzung",
+    "ans": "eine sinnvolle Ergänzung finden",
+    "type": "Nomen",
+    "forms": "der Ergänzung, die Ergänzungen",
+    "vnword": "sự bổ sung, phần bổ ngữ",
+    "vnans": "tìm một sự bổ sung hợp lý",
+    "dong_nghia_b1": "der Zusatz, die Zugabe",
+    "dong_nghia_b2": "das Supplement, die Komplettierung",
+    "giai_thich_dong_nghia": "'Supplement' thường dùng trong y học (thực phẩm bổ sung) hoặc báo chí. 'Ergänzung' dùng chung cho ngữ pháp hoặc hoàn thiện một kế hoạch.",
+    "b1_ex": "Wir müssen für diesen Satz eine sinnvolle Ergänzung finden.",
+    "vn_b1": "Chúng ta phải tìm một sự bổ sung hợp lý cho câu này.",
+    "b2_ex": "Der strategische Vorstand beauftragte das Team damit, für das bestehende Konzept noch eine sinnvolle Ergänzung finden zu können, um alle konzeptionellen Lücken zu schließen.",
+    "vn_b2": "Ban giám đốc chiến lược đã giao nhiệm vụ cho nhóm để có thể tìm thêm một sự bổ sung hợp lý cho khái niệm hiện tại, nhằm lấp đầy mọi lỗ hổng về mặt khái niệm.",
+    "lek": "1",
+    "ant": "die Streichung, die Weglassung",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "der Infinitiv",
+    "ans": "den Infinitiv verwenden",
+    "type": "Nomen",
+    "forms": "des Infinitivs, die Infinitive",
+    "vnword": "động từ nguyên thể",
+    "vnans": "sử dụng động từ nguyên thể",
+    "dong_nghia_b1": "die Grundform",
+    "dong_nghia_b2": "-",
+    "giai_thich_dong_nghia": "'Grundform' là cách gọi dễ hiểu hơn, phổ biến ở các lớp học dành cho trẻ em hoặc cấp độ cơ bản.",
+    "b1_ex": "Nach den meisten Modalverben muss man den Infinitiv verwenden.",
+    "vn_b1": "Sau hầu hết các động từ khuyết thiếu, người ta phải sử dụng động từ nguyên thể.",
+    "b2_ex": "Wenn man in der deutschen Schriftsprache zielgerichtete Nebensätze mit 'um...zu' bildet, ist es zwingend erforderlich, dass man den Infinitiv verwenden muss.",
+    "vn_b2": "Khi người ta tạo mệnh đề phụ chỉ mục đích với 'um...zu' trong ngôn ngữ viết tiếng Đức, việc phải sử dụng động từ nguyên thể là điều bắt buộc.",
+    "lek": "1",
+    "ant": "das konjugierte Verb",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "der Nominativ",
+    "ans": "das Subjekt im Nominativ",
+    "type": "Nomen",
+    "forms": "des Nominativs, die Nominative",
+    "vnword": "cách 1 (danh cách)",
+    "vnans": "chủ ngữ ở cách 1",
+    "dong_nghia_b1": "der erste Fall",
+    "dong_nghia_b2": "der Werfall",
+    "giai_thich_dong_nghia": "Chủ ngữ (Subjekt) trong câu tiếng Đức mặc định luôn phải nằm ở cách Nominativ.",
+    "b1_ex": "Man erkennt sehr schnell das Subjekt im Nominativ.",
+    "vn_b1": "Người ta nhận ra rất nhanh chóng chủ ngữ ở cách 1.",
+    "b2_ex": "Bei der linguistischen Satzanalyse ist es der elementarste Schritt, dass man zunächst das Subjekt im Nominativ eindeutig identifiziert.",
+    "vn_b2": "Trong phân tích câu ngôn ngữ học, bước cơ bản nhất là trước tiên người ta phải xác định rõ ràng chủ ngữ ở cách 1.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "die Präposition",
+    "ans": "die passende Präposition wählen",
+    "type": "Nomen",
+    "forms": "der Präposition, die Präpositionen",
+    "vnword": "giới từ",
+    "vnans": "chọn giới từ phù hợp",
+    "dong_nghia_b1": "das Verhältniswort",
+    "dong_nghia_b2": "-",
+    "giai_thich_dong_nghia": "'Verhältniswort' chỉ từ thể hiện mối quan hệ không gian, thời gian hoặc nguyên nhân, là từ vựng thuần Đức thay thế cho Präposition.",
+    "b1_ex": "Für Deutschlerner ist es oft schwer, immer die passende Präposition wählen zu können.",
+    "vn_b1": "Đối với người học tiếng Đức, thường rất khó để luôn có thể chọn giới từ phù hợp.",
+    "b2_ex": "Um sich im akademischen Kontext äußerst präzise auszudrücken, ist es essenziell, für jedes Verb zielsicher die passende Präposition wählen zu können.",
+    "vn_b2": "Để diễn đạt một cách cực kỳ chính xác trong bối cảnh học thuật, việc có thể chọn giới từ phù hợp cho mỗi động từ một cách chắc chắn là điều thiết yếu.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "der Beispielsatz",
+    "ans": "einen eigenen Beispielsatz bilden",
+    "type": "Nomen",
+    "forms": "des Beispielsatzes, die Beispielsätze",
+    "vnword": "câu ví dụ",
+    "vnans": "đặt một câu ví dụ của riêng mình",
+    "dong_nghia_b1": "das Beispiel, der Mustersatz",
+    "dong_nghia_b2": "-",
+    "giai_thich_dong_nghia": "-",
+    "b1_ex": "Im Kurs soll jeder Schüler einen eigenen Beispielsatz bilden.",
+    "vn_b1": "Trong khóa học, mỗi học sinh nên đặt một câu ví dụ của riêng mình.",
+    "b2_ex": "Um den neu erlernten und komplexen Wortschatz langfristig im Gedächtnis zu verankern, wird didaktisch empfohlen, zu jedem Begriff einen eigenen Beispielsatz bilden zu wollen.",
+    "vn_b2": "Để khắc sâu từ vựng mới học và phức tạp vào trí nhớ dài hạn, về mặt phương pháp giảng dạy, người ta khuyến nghị nên đặt một câu ví dụ của riêng mình cho mỗi khái niệm.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "erstellen",
+    "ans": "einen genauen Plan erstellen",
+    "type": "Verb",
+    "forms": "erstellt, erstellte, hat erstellt",
+    "vnword": "tạo ra, lập (kế hoạch, tài liệu)",
+    "vnans": "lập một kế hoạch chính xác",
+    "dong_nghia_b1": "machen, anfertigen",
+    "dong_nghia_b2": "konzipieren, entwerfen",
+    "giai_thich_dong_nghia": "'Erstellen' dùng nhiều cho tạo lập văn bản, tài liệu, bảng biểu. 'Konzipieren' mang tính chất xây dựng ý tưởng cốt lõi và chiến lược.",
+    "b1_ex": "Bevor wir mit der Arbeit anfangen, müssen wir einen genauen Plan erstellen.",
+    "vn_b1": "Trước khi bắt đầu với công việc, chúng ta phải lập một kế hoạch chính xác.",
+    "b2_ex": "Um die anspruchsvollen Meilensteine des Projekts rechtzeitig zu erreichen, musste das Management zunächst einen genauen Plan erstellen.",
+    "vn_b2": "Để đạt được các cột mốc đòi hỏi khắt khe của dự án đúng hạn, trước tiên ban quản lý đã phải lập một kế hoạch chính xác.",
+    "lek": "1",
+    "ant": "vernichten, löschen",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "das Lernplakat",
+    "ans": "ein übersichtliches Lernplakat gestalten",
+    "type": "Nomen",
+    "forms": "des Lernplakats, die Lernplakate",
+    "vnword": "áp phích học tập, bảng tóm tắt",
+    "vnans": "thiết kế một áp phích học tập rõ ràng",
+    "dong_nghia_b1": "das Poster",
+    "dong_nghia_b2": "das Lehrposter",
+    "giai_thich_dong_nghia": "-",
+    "b1_ex": "Für die morgige Präsentation wollen wir ein übersichtliches Lernplakat gestalten.",
+    "vn_b1": "Cho bài thuyết trình ngày mai, chúng tôi muốn thiết kế một áp phích học tập rõ ràng.",
+    "b2_ex": "Um abstrakte grammatikalische Strukturen für die Mitschüler visuell zugänglich zu machen, beschloss die Arbeitsgruppe, ein übersichtliches Lernplakat gestalten zu wollen.",
+    "vn_b2": "Để làm cho các cấu trúc ngữ pháp trừu tượng trở nên dễ tiếp cận về mặt thị giác cho các bạn cùng lớp, nhóm làm việc đã quyết định muốn thiết kế một áp phích học tập rõ ràng.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "low"
+  },
+  {
+    "word": "die Verbgruppe",
+    "ans": "die passende Verbgruppe finden",
+    "type": "Nomen",
+    "forms": "der Verbgruppe, die Verbgruppen",
+    "vnword": "cụm động từ",
+    "vnans": "tìm cụm động từ phù hợp",
+    "dong_nghia_b1": "die Verbverbindung",
+    "dong_nghia_b2": "das Prädikat",
+    "giai_thich_dong_nghia": "Trong cấu trúc câu, Verbgruppe tương đương với phần vị ngữ (Prädikat) đảm nhiệm vai trò trung tâm cung cấp hành động của câu.",
+    "b1_ex": "Bei dieser leichten Übung musst du die passende Verbgruppe finden.",
+    "vn_b1": "Ở bài tập dễ này, bạn phải tìm cụm động từ phù hợp.",
+    "b2_ex": "In der fundierten linguistischen Analyse ist es von immenser Bedeutung, zunächst die passende Verbgruppe finden zu können, um die übrigen Satzglieder richtig zuzuordnen.",
+    "vn_b2": "Trong phân tích ngôn ngữ học cơ bản, việc trước tiên có thể tìm cụm động từ phù hợp để sắp xếp đúng các thành phần câu còn lại là có ý nghĩa to lớn.",
+    "lek": "1",
+    "ant": "die Nomengruppe",
+    "level": "B1+",
+    "importance": "low"
+  },
+  {
+    "word": "recherchieren",
+    "ans": "Informationen gründlich recherchieren",
+    "type": "Verb",
+    "forms": "recherchiert, recherchierte, hat recherchiert",
+    "vnword": "nghiên cứu, tìm kiếm (thông tin)",
+    "vnans": "tìm kiếm thông tin một cách kỹ lưỡng",
+    "dong_nghia_b1": "suchen, nachschauen",
+    "dong_nghia_b2": "ermitteln, nachforschen",
+    "giai_thich_dong_nghia": "'Recherchieren' đặc biệt dùng cho việc tìm kiếm thông tin trên internet, báo chí hoặc thư viện. 'Ermitteln' thường dùng trong điều tra tội phạm hoặc điều tra hành chính.",
+    "b1_ex": "Für mein neues Referat muss ich Informationen gründlich recherchieren.",
+    "vn_b1": "Cho bài thuyết trình mới của mình, tôi phải tìm kiếm thông tin một cách kỹ lưỡng.",
+    "b2_ex": "Um ärgerliche Plagiate zu vermeiden und eine wissenschaftlich fundierte Abschlussarbeit abzugeben, ist man gezwungen, alle Informationen gründlich recherchieren zu müssen.",
+    "vn_b2": "Để tránh những vụ đạo văn đáng tiếc và nộp một khóa luận tốt nghiệp có cơ sở khoa học, người ta buộc phải tìm kiếm thông tin một cách kỹ lưỡng.",
+    "lek": "1",
+    "ant": "vermuten, erfinden",
+    "level": "B1+",
+    "importance": "high"
+  },
+
+  {
+    "word": "bringen",
+    "ans": "den gewünschten Erfolg bringen",
+    "type": "Verb",
+    "forms": "bringt, brachte, hat gebracht",
+    "vnword": "mang lại, đem lại",
+    "vnans": "mang lại thành công như mong muốn",
+    "dong_nghia_b1": "liefern, geben",
+    "dong_nghia_b2": "erbringen, einbringen",
+    "giai_thich_dong_nghia": "'Erbringen' thường dùng cho những kết quả, bằng chứng cụ thể đạt được sau một quá trình nỗ lực (z.B. Leistung erbringen).",
+    "b1_ex": "Ich hoffe, dass diese neue Methode uns den gewünschten Erfolg bringen wird.",
+    "vn_b1": "Tôi hy vọng rằng phương pháp mới này sẽ mang lại cho chúng ta thành công như mong muốn.",
+    "b2_ex": "Trotz der anfänglichen Skepsis konnte die strategische Umstrukturierung dem Unternehmen letztendlich den gewünschten Erfolg bringen.",
+    "vn_b2": "Bất chấp sự hoài nghi ban đầu, việc tái cấu trúc chiến lược cuối cùng đã có thể mang lại thành công như mong muốn cho công ty.",
+    "lek": "1",
+    "ant": "nehmen, rauben",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "die Erfahrung machen",
+    "ans": "eine wertvolle Erfahrung machen",
+    "type": "Redewendung (Nomen-Verb-Verbindung)",
+    "forms": "-",
+    "vnword": "có trải nghiệm, trải qua",
+    "vnans": "có một trải nghiệm quý giá",
+    "dong_nghia_b1": "etwas Neues erleben",
+    "dong_nghia_b2": "eine Erkenntnis gewinnen",
+    "giai_thich_dong_nghia": "-",
+    "b1_ex": "Während des Praktikums konnte er eine wertvolle Erfahrung machen.",
+    "vn_b1": "Trong thời gian thực tập, anh ấy đã có thể có một trải nghiệm quý giá.",
+    "b2_ex": "Jeder Berufsanfänger muss früher oder später eine wertvolle Erfahrung machen, um an den unvermeidlichen beruflichen Herausforderungen zu wachsen.",
+    "vn_b2": "Bất kỳ người mới bắt đầu sự nghiệp nào, không sớm thì muộn, cũng phải có một trải nghiệm quý giá để trưởng thành từ những thách thức nghề nghiệp không thể tránh khỏi.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "die Erfahrung",
+    "ans": "über viel Erfahrung verfügen",
+    "type": "Nomen",
+    "forms": "der Erfahrung, die Erfahrungen",
+    "vnword": "kinh nghiệm",
+    "vnans": "sở hữu nhiều kinh nghiệm",
+    "dong_nghia_b1": "die Praxis, das Wissen",
+    "dong_nghia_b2": "die Expertise, das Know-how",
+    "giai_thich_dong_nghia": "'Expertise' và 'Know-how' nhấn mạnh vào kinh nghiệm chuyên môn sâu rộng mang tính kỹ thuật hoặc học thuật.",
+    "b1_ex": "Unser neuer Kollege muss über viel Erfahrung verfügen.",
+    "vn_b1": "Người đồng nghiệp mới của chúng ta phải sở hữu nhiều kinh nghiệm.",
+    "b2_ex": "Um die komplexen Vertragsverhandlungen souverän leiten zu können, ist es unerlässlich, dass der Projektmanager über viel Erfahrung verfügen muss.",
+    "vn_b2": "Để có thể tự tin dẫn dắt các cuộc đàm phán hợp đồng phức tạp, điều không thể thiếu là người quản lý dự án phải sở hữu nhiều kinh nghiệm.",
+    "lek": "1",
+    "ant": "die Unerfahrenheit",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "extrem",
+    "ans": "extrem wichtig sein",
+    "type": "Adjektiv / Adverb",
+    "forms": "extremer, am extremsten",
+    "vnword": "cực kỳ, vô cùng",
+    "vnans": "cực kỳ quan trọng",
+    "dong_nghia_b1": "sehr, besonders",
+    "dong_nghia_b2": "äußerst, hochgradig",
+    "giai_thich_dong_nghia": "'Hochgradig' thường dùng trong văn phong khoa học, y tế hoặc kinh doanh để chỉ mức độ cao (z.B. hochgradig gefährlich).",
+    "b1_ex": "Für den Körper wird regelmäßiger Schlaf extrem wichtig sein.",
+    "vn_b1": "Đối với cơ thể, giấc ngủ đều đặn sẽ vô cùng quan trọng.",
+    "b2_ex": "In einer hochgradig vernetzten Arbeitswelt wird es zunehmend extrem wichtig sein, klare und gesunde Grenzen zwischen Berufs- und Privatleben zu ziehen.",
+    "vn_b2": "Trong một thế giới làm việc được kết nối cao độ, việc vạch ra ranh giới rõ ràng và lành mạnh giữa công việc và cuộc sống riêng tư sẽ ngày càng trở nên cực kỳ quan trọng.",
+    "lek": "1",
+    "ant": "ein bisschen, kaum",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "das Fazit",
+    "ans": "ein positives Fazit ziehen",
+    "type": "Nomen",
+    "forms": "des Fazits, die Fazits",
+    "vnword": "kết luận, tóm lược",
+    "vnans": "rút ra một kết luận tích cực",
+    "dong_nghia_b1": "das Ergebnis",
+    "dong_nghia_b2": "die Schlussfolgerung, das Resümee",
+    "giai_thich_dong_nghia": "'Das Resümee' mang sắc thái học thuật và thường dùng trong các bài thuyết trình, báo cáo.",
+    "b1_ex": "Am Ende des Projekts können wir ein positives Fazit ziehen.",
+    "vn_b1": "Vào cuối dự án, chúng ta có thể rút ra một kết luận tích cực.",
+    "b2_ex": "Nach der ausführlichen Evaluation sämtlicher erhobener Daten konnte die Forschungsgruppe glücklicherweise ein positives Fazit ziehen.",
+    "vn_b2": "Sau khi đánh giá chi tiết tất cả dữ liệu thu thập được, nhóm nghiên cứu may mắn đã có thể rút ra một kết luận tích cực.",
+    "lek": "1",
+    "ant": "der Auftakt, der Anfang",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "der Forumsbeitrag",
+    "ans": "einen langen Forumsbeitrag schreiben",
+    "type": "Nomen",
+    "forms": "des Forumsbeitrags, die Forumsbeiträge",
+    "vnword": "bài đăng trên diễn đàn",
+    "vnans": "viết một bài đăng dài trên diễn đàn",
+    "dong_nghia_b1": "der Text im Internet",
+    "dong_nghia_b2": "der Diskussionsbeitrag, das Posting",
+    "giai_thich_dong_nghia": "-",
+    "b1_ex": "Ich möchte heute Abend einen langen Forumsbeitrag schreiben.",
+    "vn_b1": "Tôi muốn viết một bài đăng dài trên diễn đàn vào tối nay.",
+    "b2_ex": "Um die hitzige Debatte fachlich zu versachlichen, entschied er sich dafür, einen langen Forumsbeitrag schreiben zu wollen, der alle Fakten beleuchtet.",
+    "vn_b2": "Để làm cho cuộc tranh luận sôi nổi trở nên khách quan về mặt chuyên môn, anh ấy đã quyết định muốn viết một bài đăng dài trên diễn đàn để làm sáng tỏ tất cả các sự thật.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "die Phase",
+    "ans": "eine schwierige Phase durchmachen",
+    "type": "Nomen",
+    "forms": "der Phase, die Phasen",
+    "vnword": "giai đoạn, thời kỳ",
+    "vnans": "trải qua một giai đoạn khó khăn",
+    "dong_nghia_b1": "die Zeit, der Abschnitt",
+    "dong_nghia_b2": "die Periode, das Stadium",
+    "giai_thich_dong_nghia": "'Das Stadium' thường dùng trong y học (giai đoạn bệnh) hoặc sự phát triển của sinh vật/dự án.",
+    "b1_ex": "Das Unternehmen muss gerade eine schwierige Phase durchmachen.",
+    "vn_b1": "Công ty hiện đang phải trải qua một giai đoạn khó khăn.",
+    "b2_ex": "Nach der überraschenden Massenentlassung musste die gesamte Abteilung eine schwierige Phase durchmachen, bevor sich die Stimmung wieder stabilisierte.",
+    "vn_b2": "Sau cuộc sa thải hàng loạt bất ngờ, toàn bộ bộ phận đã phải trải qua một giai đoạn khó khăn trước khi bầu không khí ổn định trở lại.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "sich registrieren",
+    "ans": "sich im System registrieren",
+    "type": "Verb (reflexiv)",
+    "forms": "registriert sich, registrierte sich, hat sich registriert",
+    "vnword": "đăng ký (tài khoản, thông tin)",
+    "vnans": "đăng ký vào hệ thống",
+    "dong_nghia_b1": "sich anmelden",
+    "dong_nghia_b2": "sich einschreiben, ein Konto erstellen",
+    "giai_thich_dong_nghia": "'Sich anmelden' thiên về việc đăng nhập (login) hoặc ghi danh khóa học. 'Sich registrieren' là quá trình khai báo thông tin để tạo mới (sign up).",
+    "b1_ex": "Jeder neue Schüler muss sich im System registrieren.",
+    "vn_b1": "Mỗi học sinh mới đều phải đăng ký vào hệ thống.",
+    "b2_ex": "Aus strikten datenschutzrechtlichen Gründen ist es zwingend erforderlich, dass alle neuen Mitarbeiter sich im System registrieren müssen, bevor sie arbeiten.",
+    "vn_b2": "Vì những lý do nghiêm ngặt về luật bảo vệ dữ liệu, điều bắt buộc là tất cả các nhân viên mới phải đăng ký vào hệ thống trước khi họ làm việc.",
+    "lek": "1",
+    "ant": "sich abmelden, sich löschen",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "unglaublich",
+    "ans": "unglaublich schnell vergehen",
+    "type": "Adjektiv / Adverb",
+    "forms": "-",
+    "vnword": "không thể tin được, cực kỳ",
+    "vnans": "trôi qua nhanh một cách không thể tin được",
+    "dong_nghia_b1": "sehr, wahnsinnig",
+    "dong_nghia_b2": "fassassungslos, unfassbar",
+    "giai_thich_dong_nghia": "'Unfassbar' mạnh hơn unglaublich, thường dùng khi nói về một sự việc vượt quá khả năng nhận thức hoặc chịu đựng của con người.",
+    "b1_ex": "Die schönen Urlaubstage können unglaublich schnell vergehen.",
+    "vn_b1": "Những ngày nghỉ lễ tươi đẹp có thể trôi qua nhanh một cách không thể tin được.",
+    "b2_ex": "Wenn man sich im Flow-Zustand befindet und hochkonzentriert arbeitet, kann die Zeit unglaublich schnell vergehen, ohne dass man es merkt.",
+    "vn_b2": "Khi người ta ở trong trạng thái dòng chảy (tập trung cao độ) và làm việc hết sức tập trung, thời gian có thể trôi qua nhanh một cách không thể tin được mà người ta không hề nhận ra.",
+    "lek": "1",
+    "ant": "glaubwürdig, normal",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "unterdrücken",
+    "ans": "die wahren Gefühle unterdrücken",
+    "type": "Verb (nicht trennbar)",
+    "forms": "unterdrückt, unterdrückte, hat unterdrückt",
+    "vnword": "kìm nén, đè nén",
+    "vnans": "kìm nén những cảm xúc thật",
+    "dong_nghia_b1": "verstecken, zurückhalten",
+    "dong_nghia_b2": "verdrängen, bezwingen",
+    "giai_thich_dong_nghia": "'Verdrängen' là thuật ngữ tâm lý học, chỉ việc gạt bỏ ký ức hoặc cảm xúc vào vô thức mà không cố ý.",
+    "b1_ex": "Es ist auf Dauer ungesund, wenn man die wahren Gefühle unterdrücken muss.",
+    "vn_b1": "Về lâu dài, việc phải kìm nén những cảm xúc thật là không lành mạnh.",
+    "b2_ex": "Wer aus Angst vor ständigen Konflikten am Arbeitsplatz permanent die wahren Gefühle unterdrücken möchte, riskiert mittelfristig ein schweres Burnout.",
+    "vn_b2": "Những người vì sợ hãi những xung đột liên tục tại nơi làm việc mà luôn muốn kìm nén những cảm xúc thật, sẽ có nguy cơ bị kiệt sức nặng nề trong trung hạn.",
+    "lek": "1",
+    "ant": "ausdrücken, zeigen",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "verzichten",
+    "ans": "bewusst auf das Auto verzichten",
+    "type": "Verb (auf + Akkusativ)",
+    "forms": "verzichtet, verzichtete, hat verzichtet",
+    "vnword": "từ bỏ, nhịn, không dùng đến",
+    "vnans": "chủ động (có ý thức) từ bỏ việc dùng ô tô",
+    "dong_nghia_b1": "nicht benutzen, weglassen",
+    "dong_nghia_b2": "entsagen, sich enthalten",
+    "giai_thich_dong_nghia": "Các từ B2 mang màu sắc văn chương, tôn giáo hoặc pháp lý (ví dụ: sich der Stimme enthalten - bỏ phiếu trắng).",
+    "b1_ex": "Der Umwelt zuliebe möchte er bewusst auf das Auto verzichten.",
+    "vn_b1": "Vì lợi ích của môi trường, anh ấy muốn chủ động từ bỏ việc dùng ô tô.",
+    "b2_ex": "In überfüllten europäischen Metropolen gibt es einen wachsenden Trend, dass immer mehr Pendler aus ökologischen Gründen bewusst auf das Auto verzichten wollen.",
+    "vn_b2": "Tại các đô thị đông đúc ở châu Âu, đang có một xu hướng ngày càng tăng là ngày càng nhiều người đi làm vì lý do sinh thái muốn chủ động từ bỏ việc dùng ô tô.",
+    "lek": "1",
+    "ant": "bestehen auf, nutzen",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "der Wunsch / den Wunsch haben",
+    "ans": "den Wunsch nach Veränderung haben",
+    "type": "Redewendung (Nomen-Verb-Verbindung)",
+    "forms": "hat, hatte, hat gehabt",
+    "vnword": "sự mong muốn / có mong muốn",
+    "vnans": "có mong muốn về sự thay đổi",
+    "dong_nghia_b1": "wollen, sich wünschen",
+    "dong_nghia_b2": "das Verlangen verspüren, die Intention hegen",
+    "giai_thich_dong_nghia": "'Das Verlangen verspüren' mang tính chất khao khát mãnh liệt từ bên trong, trong khi 'die Intention hegen' hướng đến dự định, mục tiêu cụ thể.",
+    "b1_ex": "Viele Menschen können in der Lebensmitte den Wunsch nach Veränderung haben.",
+    "vn_b1": "Nhiều người ở độ tuổi trung niên có thể có mong muốn về sự thay đổi.",
+    "b2_ex": "Nach jahrelanger, hochgradig monotoner Arbeit am Fließband ist es völlig nachvollziehbar, dass diese Angestellten den Wunsch nach Veränderung haben.",
+    "vn_b2": "Sau nhiều năm làm việc cực kỳ đơn điệu trên dây chuyền lắp ráp, việc những nhân viên này có mong muốn về sự thay đổi là điều hoàn toàn có thể hiểu được.",
+    "lek": "1",
+    "ant": "die Wunschlosigkeit",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "der/die Zuhörer/in",
+    "ans": "die aufmerksamen Zuhörer",
+    "type": "Nomen",
+    "forms": "des Zuhörers, die Zuhörer (Pl.)",
+    "vnword": "thính giả, người nghe",
+    "vnans": "những thính giả chú ý (lắng nghe)",
+    "dong_nghia_b1": "das Publikum",
+    "dong_nghia_b2": "die Zuhörerschaft, das Auditorium",
+    "giai_thich_dong_nghia": "'Das Auditorium' hoặc 'die Zuhörerschaft' được dùng để chỉ toàn bộ tập thể người nghe trong một hội trường/buổi diễn thuyết.",
+    "b1_ex": "Der Redner begrüßt die aufmerksamen Zuhörer im großen Saal.",
+    "vn_b1": "Người diễn giả chào đón những thính giả chú ý trong hội trường lớn.",
+    "b2_ex": "Der charismatische Dozent verstand es meisterhaft, die aufmerksamen Zuhörer durch provokante, interaktive Fragen in die komplexe Diskussion einzubinden.",
+    "vn_b2": "Người giảng viên đầy sức hút đã biết cách một cách bậc thầy trong việc lôi cuốn những thính giả chú ý vào cuộc thảo luận phức tạp thông qua các câu hỏi mang tính khiêu khích và tương tác.",
+    "lek": "1",
+    "ant": "der Sprecher, der Redner",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "der Ratschlag",
+    "ans": "einen wertvollen Ratschlag geben",
+    "type": "Nomen",
+    "forms": "des Ratschlags, die Ratschläge",
+    "vnword": "lời khuyên",
+    "vnans": "đưa ra một lời khuyên có giá trị",
+    "dong_nghia_b1": "der Tipp, der Rat",
+    "dong_nghia_b2": "die Empfehlung, die Orientierungshilfe",
+    "giai_thich_dong_nghia": "-",
+    "b1_ex": "Mein erfahrener Freund konnte mir einen wertvollen Ratschlag geben.",
+    "vn_b1": "Người bạn giàu kinh nghiệm của tôi đã có thể đưa ra cho tôi một lời khuyên có giá trị.",
+    "b2_ex": "Der langjährige Mentor zögerte nicht, dem jungen Start-up-Gründer einen wertvollen Ratschlag geben zu wollen, der ihn letztlich vor dem finanziellen Ruin bewahrte.",
+    "vn_b2": "Người cố vấn lâu năm đã không ngần ngại muốn đưa ra một lời khuyên có giá trị cho nhà sáng lập công ty khởi nghiệp trẻ, điều cuối cùng đã cứu anh ta khỏi sự sụp đổ tài chính.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "das Redemittel",
+    "ans": "wichtige Redemittel lernen",
+    "type": "Nomen",
+    "forms": "des Redemittels, die Redemittel",
+    "vnword": "cấu trúc câu giao tiếp, mẫu câu",
+    "vnans": "học các cấu trúc câu giao tiếp quan trọng",
+    "dong_nghia_b1": "der Ausdruck, die Phrase",
+    "dong_nghia_b2": "die Formulierungshilfe",
+    "giai_thich_dong_nghia": "-",
+    "b1_ex": "Im Sprachkurs müssen wir für die Prüfung wichtige Redemittel lernen.",
+    "vn_b1": "Trong khóa học ngôn ngữ, chúng tôi phải học các cấu trúc câu giao tiếp quan trọng cho kỳ thi.",
+    "b2_ex": "Um in hitzigen, interkulturellen Verhandlungen stets diplomatisch argumentieren zu können, müssen internationale Manager zwingend wichtige Redemittel lernen und situativ anwenden.",
+    "vn_b2": "Để luôn có thể lập luận một cách ngoại giao trong các cuộc đàm phán đa văn hóa sôi nổi, các nhà quản lý quốc tế bắt buộc phải học các cấu trúc câu giao tiếp quan trọng và áp dụng chúng tùy theo tình huống.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  {
+    "word": "die Stelle",
+    "ans": "eine gut bezahlte Stelle finden",
+    "type": "Nomen",
+    "forms": "der Stelle, die Stellen",
+    "vnword": "vị trí, chỗ làm việc",
+    "vnans": "tìm được một chỗ làm việc được trả lương cao",
+    "dong_nghia_b1": "der Arbeitsplatz, der Job",
+    "dong_nghia_b2": "die Position, das Amt",
+    "giai_thich_dong_nghia": "'Die Position' dùng cho cấp bậc trong công ty, 'das Amt' dùng cho chức vụ trong nhà nước hoặc tổ chức.",
+    "b1_ex": "Nach dem anstrengenden Studium will sie eine gut bezahlte Stelle finden.",
+    "vn_b1": "Sau quá trình học tập vất vả, cô ấy muốn tìm được một chỗ làm việc được trả lương cao.",
+    "b2_ex": "Angesichts des aktuell herrschenden Fachkräftemangels ist es für hochqualifizierte IT-Ingenieure relativ unkompliziert, rasch eine gut bezahlte Stelle finden zu können.",
+    "vn_b2": "Trước tình trạng thiếu hụt lao động lành nghề đang diễn ra hiện nay, đối với các kỹ sư công nghệ thông tin trình độ cao, việc có thể nhanh chóng tìm được một chỗ làm việc được trả lương cao là tương đối không phức tạp.",
+    "lek": "1",
+    "ant": "die Arbeitslosigkeit",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "die Art und Weise",
+    "ans": "auf diese Art und Weise",
+    "type": "Redewendung / Nomen",
+    "forms": "der Art und Weise (Sg.)",
+    "vnword": "phương thức, cách thức",
+    "vnans": "bằng cách thức này",
+    "dong_nghia_b1": "so, auf diesem Weg",
+    "dong_nghia_b2": "mit diesem Vorgehen, auf diese Methode",
+    "giai_thich_dong_nghia": "Cụm 'Art und Weise' là một cặp từ cố định (Zwillingsformel) để nhấn mạnh phương pháp tiến hành một sự việc.",
+    "b1_ex": "Wir können das schwierige Problem auf diese Art und Weise lösen.",
+    "vn_b1": "Chúng ta có thể giải quyết vấn đề khó khăn này bằng cách thức này.",
+    "b2_ex": "Nur wenn wir die hierarchischen Kommunikationsprozesse umstrukturieren, können wir künftige Missverständnisse auf diese Art und Weise dauerhaft und effektiv vermeiden.",
+    "vn_b2": "Chỉ khi chúng ta tái cấu trúc các quy trình giao tiếp phân cấp, chúng ta mới có thể tránh được những hiểu lầm trong tương lai bằng cách thức này một cách lâu dài và hiệu quả.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "durchführen",
+    "ans": "ein komplexes Projekt durchführen",
+    "type": "Verb (trennbar)",
+    "forms": "führt durch, führte durch, hat durchgeführt",
+    "vnword": "thực hiện, tiến hành",
+    "vnans": "tiến hành một dự án phức tạp",
+    "dong_nghia_b1": "machen, realisieren",
+    "dong_nghia_b2": "abwickeln, vollziehen",
+    "giai_thich_dong_nghia": "'Abwickeln' thường dùng cho việc xử lý các giao dịch, thủ tục hành chính, hợp đồng từ đầu đến cuối.",
+    "b1_ex": "Wir werden im nächsten Monat ein komplexes Projekt durchführen.",
+    "vn_b1": "Chúng ta sẽ tiến hành một dự án phức tạp vào tháng tới.",
+    "b2_ex": "Aufgrund der unerwartet massiven Budgetkürzungen war es dem engagierten Team leider nicht mehr möglich, ein komplexes Projekt durchführen zu können.",
+    "vn_b2": "Do những đợt cắt giảm ngân sách khổng lồ bất ngờ, đội ngũ tâm huyết rất tiếc đã không còn khả năng có thể tiến hành một dự án phức tạp.",
+    "lek": "1",
+    "ant": "abbrechen, unterlassen",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "der Punkt",
+    "ans": "ein wichtiger Punkt sein",
+    "type": "Nomen",
+    "forms": "des Punktes, die Punkte",
+    "vnword": "điểm, vấn đề, dấu chấm",
+    "vnans": "là một vấn đề (điểm) quan trọng",
+    "dong_nghia_b1": "das Thema, der Aspekt",
+    "dong_nghia_b2": "das Kriterium, der Belang",
+    "giai_thich_dong_nghia": "-",
+    "b1_ex": "Die Pünktlichkeit wird in Deutschland immer ein wichtiger Punkt sein.",
+    "vn_b1": "Sự đúng giờ sẽ luôn là một vấn đề quan trọng ở Đức.",
+    "b2_ex": "In den anstehenden tariflichen Gehaltsverhandlungen wird die zeitliche Flexibilität der Arbeitskräfte zweifellos ein wichtiger Punkt sein.",
+    "vn_b2": "Trong các cuộc đàm phán lương theo thỏa ước sắp tới, sự linh hoạt về thời gian của lực lượng lao động chắc chắn sẽ là một vấn đề quan trọng.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "high"
+  },
+  {
+    "word": "die Weise",
+    "ans": "auf verschiedene Weise",
+    "type": "Nomen",
+    "forms": "der Weise, die Weisen",
+    "vnword": "cách, phương pháp",
+    "vnans": "bằng nhiều cách khác nhau",
+    "dong_nghia_b1": "die Art, die Methode",
+    "dong_nghia_b2": "das Verfahren",
+    "giai_thich_dong_nghia": "Thường đi kèm giới từ 'auf' (auf diese Weise, auf verschiedene Weise).",
+    "b1_ex": "Man kann dieses mathematische Rätsel auf verschiedene Weise lösen.",
+    "vn_b1": "Người ta có thể giải câu đố toán học này bằng nhiều cách khác nhau.",
+    "b2_ex": "Innovative Unternehmen versuchen heutzutage gezielt, die intrinsische Motivation und Bindung ihrer Mitarbeiter auf verschiedene Weise nachhaltig zu steigern.",
+    "vn_b2": "Các công ty đổi mới ngày nay đang cố gắng có chủ đích để tăng cường sự động viên nội tại và sự gắn kết của nhân viên bằng nhiều cách khác nhau một cách bền vững.",
+    "lek": "1",
+    "ant": "-",
+    "level": "B1+",
+    "importance": "normal"
+  },
+  
+  
   
 
-  
-  
-
-
-  
-  
-  
-  
 ]
 
     const ALL_LEVELS = ["B1 Goethe", "B1+", "B2.1", "B2.2", "C1.1", "C1.2"];
@@ -51741,99 +52326,73 @@
     let lifelines = 1; 
     let isOfferingLifeline = false;
     
-    let currentFilter = 'all'; // BIẾN MỚI THÊM ĐỂ QUẢN LÝ BỘ LỌC
+    let currentFilter = 'all';
 
-    // --- HỆ THỐNG THUẬT TOÁN B2 & THỂ CHẤT ---
-    let userStats = JSON.parse(localStorage.getItem('b2_user_stats')) || {
-        expVocab: 0,
-        expInput: 0,
-        expOutput: 0,
-        dailySleep: 7, 
-        isLate: false,
-        inputDone: false,
-        outputDone: false,
-        swimDone: false,
-        lastUpdate: ""
-    };
+    // --- YOUTUBE AUDIO PLAYER LOGIC ---
+    let ytPlayer;
+    let isMusicPlaying = false;
 
-    function checkNewDay() {
-        const today = new Date().toISOString().split('T')[0];
-        if (userStats.lastUpdate !== today) {
-            userStats.inputDone = false;
-            userStats.outputDone = false;
-            userStats.swimDone = false;
-            userStats.lastUpdate = today;
-            localStorage.setItem('b2_user_stats', JSON.stringify(userStats));
+    // Tải YouTube API tự động (giúp không bị lỗi khi phục hồi dữ liệu xong reload trang)
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    function onYouTubeIframeAPIReady() {
+        ytPlayer = new YT.Player('yt-player-container', {
+            height: '10', 
+            width: '10',
+            videoId: '0n1XLJse7sQ',
+            playerVars: {
+                'autoplay': 0,
+                'controls': 0,
+                'showinfo': 0,
+                'rel': 0,
+                'loop': 1,
+                'playlist': '0n1XLJse7sQ' 
+            },
+            events: {
+                'onReady': function(event) {
+                    event.target.setVolume(60);
+                }
+            }
+        });
+    }
+
+    function toggleMusic() {
+        const btn = document.getElementById('music-btn');
+        
+        // Nếu API chưa load xong, thay vì hiện alert thì chỉ nháy chữ nhẹ nhàng
+        if (!ytPlayer || typeof ytPlayer.getPlayerState !== 'function') {
+            const oldText = btn.innerHTML;
+            btn.innerHTML = '⏳ Đang kết nối...';
+            btn.style.opacity = '0.7';
+            setTimeout(() => {
+                if (btn.innerHTML === '⏳ Đang kết nối...') {
+                    btn.innerHTML = oldText;
+                    btn.style.opacity = '1';
+                }
+            }, 1500);
+            return;
         }
-    }
 
-    function openDashboard() {
-        checkNewDay();
-        document.getElementById('chk-input').checked = userStats.inputDone;
-        document.getElementById('chk-output').checked = userStats.outputDone;
-        document.getElementById('chk-swim').checked = userStats.swimDone;
-        document.getElementById('dashboard-modal').classList.remove('hidden');
-        refreshDashboardUI();
-    }
-
-    function closeDashboard() {
-        document.getElementById('dashboard-modal').classList.add('hidden');
-    }
-
-    function setSleep(val) {
-        if (val === 'late') {
-            userStats.isLate = !userStats.isLate;
+        const state = ytPlayer.getPlayerState();
+        if (state === 1 || state === 3) {
+            ytPlayer.pauseVideo();
+            btn.innerHTML = '🎵 Melodie von Bach';
+            btn.style.background = 'rgba(56, 189, 248, 0.1)';
+            btn.style.color = '#38bdf8';
+            btn.style.borderColor = 'rgba(56, 189, 248, 0.3)';
         } else {
-            userStats.dailySleep = val;
+            ytPlayer.setVolume(60);
+            ytPlayer.playVideo();
+            btn.innerHTML = '⏸️ Pause - Melodie von Bach';
+            btn.style.background = 'rgba(234, 88, 12, 0.2)';
+            btn.style.color = '#fff';
+            btn.style.borderColor = '#ea580c';
         }
-        updateDailyStats();
     }
 
-    function updateDailyStats() {
-        const isInput = document.getElementById('chk-input').checked;
-        const isOutput = document.getElementById('chk-output').checked;
-        const isSwim = document.getElementById('chk-swim').checked;
-        
-        let multiplier = calculateHealthMultiplier();
-        
-        // Chỉ cộng điểm khi tick từ Tắt -> Bật
-        if (isInput && !userStats.inputDone) { userStats.expInput += Math.round(20 * multiplier); }
-        if (isOutput && !userStats.outputDone) { userStats.expOutput += Math.round(30 * multiplier); }
-        
-        userStats.inputDone = isInput;
-        userStats.outputDone = isOutput;
-        userStats.swimDone = isSwim;
-        
-        localStorage.setItem('b2_user_stats', JSON.stringify(userStats));
-        refreshDashboardUI();
-    }
-
-    function calculateHealthMultiplier() {
-        let multi = 1.0;
-        if (userStats.dailySleep < 6) multi -= 0.2;
-        if (userStats.isLate) multi -= 0.1;
-        if (userStats.swimDone) multi += 0.3;
-        return Math.max(0.5, Math.min(multi, 1.5));
-    }
-
-    function refreshDashboardUI() {
-        document.getElementById('btn-sleep-5').style.background = (userStats.dailySleep < 6) ? 'var(--danger)' : '';
-        document.getElementById('btn-sleep-7').style.background = (userStats.dailySleep >= 7) ? 'var(--success)' : '';
-        document.getElementById('btn-sleep-late').style.background = (userStats.isLate) ? 'var(--warning)' : '';
-        
-        let vocabScore = Math.min((userStats.expVocab / 5000) * 40, 40); 
-        let inputScore = Math.min((userStats.expInput / 2000) * 30, 30); 
-        let outputScore = Math.min((userStats.expOutput / 2000) * 30, 30); 
-        
-        let totalReadiness = Math.round(vocabScore + inputScore + outputScore);
-        
-        document.getElementById('b2-readiness-score').innerText = totalReadiness + "%";
-        
-        let multi = calculateHealthMultiplier();
-        let multiText = document.getElementById('health-multiplier-display');
-        multiText.innerText = `Hệ số nạp kiến thức hôm nay: x${multi.toFixed(1)}`;
-        multiText.style.color = multi >= 1 ? 'var(--success)' : 'var(--danger)';
-    }
 
     function renderLevelSelector() {
         const container = document.getElementById('level-selector');
@@ -52046,7 +52605,22 @@
             .replace(/\b(r|r\.)\/(e|e\.)\s+(\w+)/g, "der $3, die $3")
             .replace(/\br\.\s/g, "der ").replace(/\be\.\s/g, "die ").replace(/\bs\.\s/g, "das ");
 
-        if (window.responsiveVoice) {
+        // Ưu tiên sử dụng API speechSynthesis của thiết bị (Tìm giọng Stefan hoặc giọng Nam tiếng Đức)
+        let voices = window.speechSynthesis.getVoices();
+        let stefanVoice = voices.find(v => v.name.includes("Stefan") && v.lang.startsWith("de"));
+        let defaultGermanMale = voices.find(v => v.lang.startsWith("de") && v.name.toLowerCase().includes("male"));
+        let anyGermanVoice = voices.find(v => v.lang === "de-DE" || v.lang === "de-AT");
+
+        let selectedVoice = stefanVoice || defaultGermanMale || anyGermanVoice;
+
+        if (selectedVoice) {
+            let utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.voice = selectedVoice;
+            utterance.lang = "de-DE";
+            utterance.rate = 0.95;
+            window.speechSynthesis.speak(utterance);
+        } else if (window.responsiveVoice) {
+            // Dự phòng ResponsiveVoice nếu thiết bị không hỗ trợ sẵn
             responsiveVoice.speak(cleanText, "Deutsch Male", { rate: 0.95 });
         }
     }
@@ -52083,15 +52657,12 @@
 
                 // === Xử lý dữ liệu mastery (từ vựng) ===
                 if (parsed && typeof parsed === 'object') {
-                    // Hợp nhất dữ liệu cũ vào mastery hiện tại
                     Object.keys(parsed).forEach(key => {
                         if (mastery[key]) {
-                            // Giữ lại dữ liệu cũ nếu có
                             mastery[key].s = parsed[key].s ?? mastery[key].s;
                             mastery[key].w = parsed[key].w ?? mastery[key].w;
                             mastery[key].a = parsed[key].a ?? mastery[key].a;
                         } else {
-                            // Nếu từ mới thì thêm vào
                             mastery[key] = parsed[key];
                         }
                     });
@@ -52278,7 +52849,6 @@
             .replace(/\b(jemandem|jemanden|jemand)\s+(etwas)\b/g, "$2 $1");
     }
 
-    // THÊM: HÀM LỌC TỪ THEO QUAN TRỌNG
     function setFilter(type) {
         currentFilter = type;
         const btnAll = document.getElementById('filter-all');
@@ -52322,14 +52892,9 @@
         localStorage.setItem('b2_pro_v1', JSON.stringify(mastery));
         renderList();
         renderHeat();
-
-        checkAndResetLifelines();
-        checkNewDay(); 
-
-        const hideGuideWelcome = localStorage.getItem('b2_hide_guide_welcome');
-        if (hideGuideWelcome !== 'true') {
-            openGuide(false);
-        }
+        checkAndResetLifelines(); 
+        
+        // Cố tình không gọi openGuide(false) để không hiện cảnh báo từ đầu
     }
 
     function renderList() {
@@ -52574,11 +53139,6 @@
                         save(); renderHeat();
 
                         if (justMastered) {
-                            // Cộng điểm EXP Từ vựng dựa trên hệ số thể chất hôm nay
-                            let multi = calculateHealthMultiplier();
-                            userStats.expVocab += Math.round(10 * multi);
-                            localStorage.setItem('b2_user_stats', JSON.stringify(userStats));
-
                             let pCounter = parseInt(localStorage.getItem('b2_mastered_words_counter') || '0');
                             pCounter++;
                             if (pCounter >= 3) { 
@@ -52752,7 +53312,6 @@
     function save() { localStorage.setItem('b2_pro_v1', JSON.stringify(mastery)); renderList(); }
     
     function toggleVisible(st) { 
-        // Lấy đúng những từ đang được LỌC HIỂN THỊ
         const currentData = data.filter(v => {
             if (v.level !== currentLevel) return false;
             if (currentLek === 'fehler') return (v.type && v.type.includes("Fehler"));
@@ -52781,166 +53340,6 @@
 
     init(); 
 </script>
-
-
-<!-- ==================== DASHBOARD + RADAR (Phiên bản sạch) ==================== -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-let radarChart = null;
-
-function updateDailyAndRadar() {
-    const isSwim   = document.getElementById('chk-swim').checked;
-    const isInput  = document.getElementById('chk-input').checked;
-    const isRead   = document.getElementById('chk-read')?.checked || false;
-    const isWrite  = document.getElementById('chk-write').checked;
-    const isSpeak  = document.getElementById('chk-speak').checked;
-
-    userStats.swimDone = isSwim;
-
-    const inputDone = isInput || isRead;
-    if (inputDone && !userStats.inputDone) userStats.expInput += 25;
-    userStats.inputDone = inputDone;
-
-    const outputDone = isWrite || isSpeak;
-    if (outputDone && !userStats.outputDone) userStats.expOutput += 30;
-    userStats.outputDone = outputDone;
-
-    localStorage.setItem('b2_user_stats', JSON.stringify(userStats));
-    updateRadarChart();
-}
-
-function updateRadarChart() {
-    const ctx = document.getElementById('radar-chart');
-    if (!ctx) return;
-
-    // B2 High
-    const b2HighWords = data.filter(v => v.level && v.level.includes("B2") && v.importance === 'high');
-    const b2HighMastered = b2HighWords.filter(v => mastery[v.word]?.s >= 3).length;
-    const b2HighPercent = b2HighWords.length > 0 ? Math.min(Math.round((b2HighMastered / b2HighWords.length) * 100), 100) : 0;
-
-    // B1
-    const b1Words = data.filter(v => v.level && v.level.includes("B1"));
-    const b1Mastered = b1Words.filter(v => mastery[v.word]?.s >= 2).length;
-    const b1Percent = b1Words.length > 0 ? Math.min(Math.round((b1Mastered / b1Words.length) * 100), 100) : 0;
-
-    const inputScore = Math.min(userStats.inputDone ? 58 : 22, 100);
-    const outputScore = Math.min(userStats.outputDone ? 55 : 20, 100);
-    const healthScore = Math.min(Math.max(calculateHealthMultiplier() * 78, 0), 100);
-
-    let accuracyScore = 48;
-    const levelWords = data.filter(v => v.level === currentLevel);
-    if (levelWords.length > 0) {
-        const errored = levelWords.filter(v => (mastery[v.word]?.w || 0) > 0).length;
-        accuracyScore = Math.max(100 - (errored / levelWords.length * 95), 28);
-    }
-
-    const overall = Math.round((b2HighPercent * 0.45) + (b1Percent * 0.10) + (inputScore * 0.15) + (outputScore * 0.15) + (healthScore * 0.12) + (accuracyScore * 0.13));
-
-    // Cập nhật điểm
-    const scoreEl = document.getElementById('b2-readiness-score');
-    if (scoreEl) scoreEl.textContent = overall + '%';
-
-    // Cập nhật tiến độ B2 High
-    const progressEl = document.getElementById('b2-high-progress');
-    if (progressEl) progressEl.innerHTML = `${b2HighMastered} / ${b2HighWords.length} từ <span style="font-size:15px; color:#94a3b8;">(${b2HighPercent}%)</span>`;
-
-    // === DỰ BÁO NGÀY CẦN HỌC ===
-    const forecastEl = document.getElementById('b2-forecast');
-    if (forecastEl) {
-        if (b2HighPercent >= 75) {
-            forecastEl.innerHTML = `🎉 Tuyệt vời! Bạn đã nắm vững khá tốt từ B2 High.`;
-        } else {
-            const remaining = b2HighWords.length - b2HighMastered;
-            // Giả sử trung bình nắm thêm 2.5 từ High mỗi ngày
-            const daysNeeded = Math.ceil(remaining / 2.5);
-            forecastEl.innerHTML = `Với tốc độ hiện tại, bạn cần khoảng <b style="color:#c084fc;">${daysNeeded}–${daysNeeded + 4} ngày</b> nữa để đạt mức khá ổn (75%+).`;
-        }
-    }
-
-    // Vẽ radar
-    if (radarChart) radarChart.destroy();
-    radarChart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: ['B2 High', 'B1', 'Nghe/Đọc', 'Nói/Viết', 'Sức khỏe', 'Độ chính xác'],
-            datasets: [{
-                data: [b2HighPercent, b1Percent, inputScore, outputScore, healthScore, accuracyScore],
-                backgroundColor: 'rgba(192, 132, 252, 0.25)',
-                borderColor: '#c084fc',
-                borderWidth: 2.5,
-                pointBackgroundColor: '#c084fc',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: '#c084fc'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            scales: {
-                r: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: { display: false },
-                    grid: { color: 'rgba(255,255,255,0.1)' },
-                    angleLines: { color: 'rgba(255,255,255,0.1)' }
-                }
-            },
-            plugins: { legend: { display: false } }
-        }
-    });
-}
-
-function setSleep(status) {
-    if (status === 'late') { userStats.isLate = true; userStats.dailySleep = 6; }
-    else if (status === 'very-late') { userStats.isLate = true; userStats.dailySleep = 5; }
-    else if (status === 'early') { userStats.isLate = false; userStats.dailySleep = 8; }
-    else { userStats.isLate = false; userStats.dailySleep = 7; }
-
-    localStorage.setItem('b2_user_stats', JSON.stringify(userStats));
-    highlightSleepButtons();
-    updateRadarChart();
-}
-
-function highlightSleepButtons() {
-    const ids = ['sleep-early','sleep-normal','sleep-late','sleep-very-late'];
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.background = 'rgba(255,255,255,0.06)';
-    });
-
-    if (userStats.isLate && userStats.dailySleep < 6) {
-        document.getElementById('sleep-very-late').style.background = 'rgba(248,113,113,0.35)';
-        document.getElementById('sleep-very-late').style.borderColor = '#f87171';
-    } else if (userStats.isLate) {
-        document.getElementById('sleep-late').style.background = 'rgba(248,113,113,0.35)';
-        document.getElementById('sleep-late').style.borderColor = '#f87171';
-    } else if (userStats.dailySleep >= 8) {
-        document.getElementById('sleep-early').style.background = 'rgba(52,211,153,0.35)';
-        document.getElementById('sleep-early').style.borderColor = '#34d399';
-    } else {
-        document.getElementById('sleep-normal').style.background = 'rgba(52,211,153,0.35)';
-        document.getElementById('sleep-normal').style.borderColor = '#34d399';
-    }
-}
-
-function openDashboard() {
-    checkNewDay();
-    document.getElementById('dashboard-modal').classList.remove('hidden');
-
-    document.getElementById('chk-swim').checked = userStats.swimDone || false;
-    document.getElementById('chk-input').checked = userStats.inputDone || false;
-    document.getElementById('chk-read').checked = false;
-    document.getElementById('chk-write').checked = userStats.outputDone || false;
-    document.getElementById('chk-speak').checked = userStats.outputDone || false;
-    document.getElementById('chk-grammar').checked = false;
-
-    highlightSleepButtons();
-    setTimeout(() => updateRadarChart(), 80);
-}
-</script>
-
 
 </body>
 </html>
